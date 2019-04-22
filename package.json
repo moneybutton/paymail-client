@@ -1,0 +1,67 @@
+{
+  "name": "@moneybutton/paymail-client",
+  "version": "0.1.0",
+  "description": "Money Button isomorphic Paymail utilities.",
+  "main": "dist/paymail-client.cjs.js",
+  "module": "dist/paymail-client.esm.js",
+  "unpkg": "dist/paymail-client.iife.js",
+  "library": "PaymailClient",
+  "files": [
+    "dist/**"
+  ],
+  "scripts": {
+    "lint": "standard --parser=babel-eslint",
+    "pretest": "yarn lint",
+    "test": "mocha",
+    "build": "rollup -c",
+    "build:dev": "rollup -c",
+    "build:watch": "yarn build -w",
+    "dev": "yarn build:watch"
+  },
+  "repository": "https://github.com/moneybutton/yours",
+  "author": "Yours Inc.",
+  "license": "UNLICENSED",
+  "private": true,
+  "dependencies": {
+    "@babel/runtime": "7.0.0",
+    "bsv": "0.26.4",
+    "isomorphic-fetch": "2.2.1",
+    "moment": "2.24.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "7.0.0",
+    "@babel/core": "7.0.0",
+    "@babel/plugin-proposal-object-rest-spread": "7.0.0",
+    "@babel/plugin-transform-runtime": "7.0.0",
+    "@babel/preset-env": "7.0.0",
+    "babel-eslint": "9.0.0",
+    "bdd-lazy-var": "2.5.1",
+    "chai": "4.2.0",
+    "concurrently": "3.6.1",
+    "dotenv-cli": "1.4.0",
+    "http-server": "0.11.1",
+    "mocha": "5.2.0",
+    "rollup": "0.66.6",
+    "rollup-plugin-babel": "4.0.3",
+    "rollup-plugin-babel-minify": "6.0.0",
+    "rollup-plugin-commonjs": "9.1.8",
+    "rollup-plugin-node-builtins": "2.1.2",
+    "rollup-plugin-node-globals": "1.4.0",
+    "rollup-plugin-node-resolve": "3.4.0",
+    "rollup-plugin-replace": "2.0.0",
+    "should": "13.2.1",
+    "standard": "12.0.1"
+  },
+  "standard": {
+    "globals": [
+      "afterEach",
+      "beforeEach",
+      "describe",
+      "it"
+    ],
+    "ignore": [
+      "docs/"
+    ]
+  },
+  "gitHead": "1140693bf8eb445920deeb5d0c76e6e5ba341876"
+}
