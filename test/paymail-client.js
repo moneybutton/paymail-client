@@ -386,7 +386,7 @@ describe('PaymailClient', () => {
         return get.bodyFactory.buildBodyToRequestAddress(get.senderInfo, get.aPrivateKey)
       })
 
-      describe('the message is valid', () => {
+      describe('when the message is valid', () => {
         it('returns true', async () => {
           const message = VerifiableMessage.forBasicAddressResolution(get.petition)
           const result = await get.aClient.isValidSignature(message, get.petition.signature, get.aPaymail, get.correspondingPublicKey.toString())

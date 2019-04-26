@@ -3,6 +3,7 @@ import bsv from 'bsv'
 import { RequestBodyFactory } from './RequestBodyFactory'
 import { Clock } from './Clock'
 import { PaymailNotFound } from './errors/PaymailNotFound'
+import { Capabilities } from './constants'
 
 class PaymailClient {
   constructor (dns, fetch, clock = null) {
@@ -44,7 +45,7 @@ class PaymailClient {
 
   async isValidSignature (message, signature, paymail, pubkey = null) {
     let senderPublicKey
-    if (pubkey && await this.resolver.domainHasCapability(paymail.split('@')[1], 'verifyPublicKeyOwner')) {
+    if (pubkey && await this.resolver.domainHasCapability(paymail.split('@')[1], Capabilities.verifyPublicKeyOwner)) {
       if (await this.verifyPubkeyOwner(pubkey, paymail)) {
         senderPublicKey = bsv.PublicKey.fromString(pubkey)
       } else {

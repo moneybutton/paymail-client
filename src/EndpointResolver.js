@@ -1,3 +1,5 @@
+import { Capabilities } from './constants'
+
 class EndpointResolver {
   constructor (dns, fetch) {
     this.dns = dns
@@ -7,7 +9,7 @@ class EndpointResolver {
 
   async getIdentityUrlFor (aPaymail) {
     const [alias, domain] = aPaymail.split('@')
-    await this.ensureCapabilityFor(domain, 'pki')
+    await this.ensureCapabilityFor(domain, Capabilities.pki)
     const apiDescriptor = await this.getApiDescriptionFor(domain)
     const identityUrl = apiDescriptor.capabilities.pki
       .replace('{alias}', alias).replace('{domain.tld}', domain)
@@ -16,7 +18,7 @@ class EndpointResolver {
 
   async getAddressUrlFor (aPaymail) {
     const [ alias, domain ] = aPaymail.split('@')
-    await this.ensureCapabilityFor(domain, 'paymentDestination')
+    await this.ensureCapabilityFor(domain, Capabilities.paymentDestination)
     const apiDescriptor = await this.getApiDescriptionFor(domain)
     const addressUrl = apiDescriptor.capabilities.paymentDestination
       .replace('{alias}', alias).replace('{domain.tld}', domain)
@@ -25,7 +27,7 @@ class EndpointResolver {
 
   async getVerifyUrlFor (aPaymail, aPubkey) {
     const [ alias, domain ] = aPaymail.split('@')
-    await this.ensureCapabilityFor(domain, 'verifyPublicKeyOwner')
+    await this.ensureCapabilityFor(domain, Capabilities.verifyPublicKeyOwner)
     const apiDescriptor = await this.getApiDescriptionFor(domain)
     const url = apiDescriptor.capabilities.verifyPublicKeyOwner
       .replace('{alias}', alias).replace('{domain.tld}', domain).replace('{pubkey}', aPubkey)
