@@ -273,6 +273,8 @@ describe('PaymailClient', () => {
         }
       })
     })
+
+    describe('when the server does not validate')
   })
 
   describe('#verifyPubkeyOwner', () => {
@@ -354,6 +356,12 @@ describe('PaymailClient', () => {
     ))
 
     describe('if api includes verify capability', () => {
+      def('apiCapabilities', () => ({
+        pki: `https://${get.aDomain}:80/api/v1/id/{alias}@{domain.tld}`,
+        paymentDestination: `https://${get.aDomain}:80/api/v1/address/{alias}@{domain.tld}`,
+        verifyPublicKeyOwner: `https://${get.aDomain}:80/api/v1/verifypubkey/{alias}@{domain.tld}/{pubkey}`
+      }))
+
       beforeEach(() => {
         get.dns.registerRecord(`_bsvalias._tcp.${get.aDomain}`, {
           name: get.aDomain,
@@ -362,11 +370,7 @@ describe('PaymailClient', () => {
         mockResponse(`https://${get.aDomain}:80/.well-known/bsvalias`,
           {
             bsvalias: '1.0',
-            capabilities: {
-              pki: `https://${get.aDomain}:80/api/v1/id/{alias}@{domain.tld}`,
-              paymentDestination: `https://${get.aDomain}:80/api/v1/address/{alias}@{domain.tld}`,
-              verifyPublicKeyOwner: `https://${get.aDomain}:80/api/v1/verifypubkey/{alias}@{domain.tld}/{pubkey}`
-            }
+            capabilities: get.apiCapabilities
           }
         )
         mockResponse(
@@ -431,6 +435,62 @@ describe('PaymailClient', () => {
           const message = VerifiableMessage.forBasicAddressResolution(data)
           const result = await get.aClient.isValidSignature(message, get.petition.signature, get.aPaymail, get.correspondingPublicKey.toString())
           expect(result).to.be.false
+        })
+      })
+
+      describe('when the pubkey is not present', async () => {
+        def('petition', () => {
+          const { pubkey, ...data } = get.bodyFactory.buildBodyToRequestAddress(get.senderInfo, get.aPrivateKey)
+          return data
+        })
+
+        def('pkiResponse', () => {
+          return {
+            bsvalias: '1.0',
+            handle: get.aPaymail,
+            pubkey: get.correspondingPublicKey.toString()
+          }
+        })
+
+        beforeEach(() => {
+          mockResponse(
+            `https://${get.aDomain}:80/api/v1/id/${get.aPaymail}`,
+            get.pkiResponse
+          )
+        })
+
+        it('does not try to verify ownership of pubkey', async () => {
+          const message = VerifiableMessage.forBasicAddressResolution(get.petition)
+          await get.aClient.isValidSignature(message, get.petition.signature, get.aPaymail)
+          const requestMade = amountOfRequestFor(`https://${get.aDomain}:80/api/v1/verifypubkey/${get.aPaymail}/${get.correspondingPublicKey}`)
+          expect(requestMade).to.be.equal(0)
+        })
+
+        it('tries to verify searching a pubkey using pki', async () => {
+          const message = VerifiableMessage.forBasicAddressResolution(get.petition)
+          await get.aClient.isValidSignature(message, get.petition.signature, get.aPaymail)
+          const requestMade = amountOfRequestFor(`https://${get.aDomain}:80/api/v1/id/${get.aPaymail}`)
+          expect(requestMade).to.be.equal(1)
+        })
+
+        describe('if the domain does not have pki capability', () => {
+          def('apiCapabilities', () => ({
+            // pki: `https://${get.aDomain}:80/api/v1/id/{alias}@{domain.tld}`,
+            paymentDestination: `https://${get.aDomain}:80/api/v1/address/{alias}@{domain.tld}`
+          }))
+
+          it('does not to verify using pki', async () => {
+            const message = VerifiableMessage.forBasicAddressResolution(get.petition)
+            await get.aClient.isValidSignature(message, get.petition.signature, get.aPaymail)
+            const requestMade = amountOfRequestFor(`https://${get.aDomain}:80/api/v1/id/${get.aPaymail}`)
+            expect(requestMade).to.be.equal(0)
+          })
+
+          it('returns false', async () => {
+            const message = VerifiableMessage.forBasicAddressResolution(get.petition)
+            const result = await get.aClient.isValidSignature(message, get.petition.signature, get.aPaymail)
+            expect(result).to.be.false
+          })
         })
       })
     })
