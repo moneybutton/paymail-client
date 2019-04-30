@@ -70,9 +70,3 @@ client.isValidSignature (aMessage, aSignature, 'someone@moneybutton.com').then( 
   }
 })
 ```
-
-
-
-## License
-
-MIT © 2018 Yours Inc.
