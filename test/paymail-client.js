@@ -274,7 +274,7 @@ describe('PaymailClient', () => {
       })
     })
 
-    describe('when the server does not validate')
+    describe.skip('when the server does not validate', () => {})
   })
 
   describe('#verifyPubkeyOwner', () => {
@@ -290,7 +290,7 @@ describe('PaymailClient', () => {
     def('apiCapabilities', () => (
       {
         pki: `https://${get.aDomain}:80/api/v1/id/{alias}@{domain.tld}`,
-        verifyPublicKeyOwner: `https://${get.aDomain}:80/api/v1/verifypubkey/{alias}@{domain.tld}/{pubkey}`
+        a9f510c16bde: `https://${get.aDomain}:80/api/v1/verifypubkey/{alias}@{domain.tld}/{pubkey}`
       }
     ))
 
@@ -315,7 +315,7 @@ describe('PaymailClient', () => {
       )
     })
 
-    describe('when verifyPublicKeyOwner capability is not defined', () => {
+    describe('when a9f510c16bde (veridy public key owner) capability is not defined', () => {
       def('apiCapabilities', () => (
         {
           pki: `https://${get.aDomain}:80/api/v1/id/{alias}@{domain.tld}`,
@@ -326,7 +326,7 @@ describe('PaymailClient', () => {
       it('raises an error', async () => {
         await get.aClient.verifyPubkeyOwner(get.correspondingPublicKey, get.aPaymail).then(
           () => assert.fail('sholdnt finish if capability is missing'),
-          (error) => expect(error.message).to.be.equals(`Unknown capability "verifyPublicKeyOwner" for "${get.aDomain}"`)
+          (error) => expect(error.message).to.be.equals(`Unknown capability "a9f510c16bde" for "${get.aDomain}"`)
         )
       })
     })
@@ -359,7 +359,7 @@ describe('PaymailClient', () => {
       def('apiCapabilities', () => ({
         pki: `https://${get.aDomain}:80/api/v1/id/{alias}@{domain.tld}`,
         paymentDestination: `https://${get.aDomain}:80/api/v1/address/{alias}@{domain.tld}`,
-        verifyPublicKeyOwner: `https://${get.aDomain}:80/api/v1/verifypubkey/{alias}@{domain.tld}/{pubkey}`
+        a9f510c16bde: `https://${get.aDomain}:80/api/v1/verifypubkey/{alias}@{domain.tld}/{pubkey}`
       }))
 
       beforeEach(() => {

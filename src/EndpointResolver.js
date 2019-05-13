@@ -29,7 +29,7 @@ class EndpointResolver {
     const [ alias, domain ] = aPaymail.split('@')
     await this.ensureCapabilityFor(domain, Capabilities.verifyPublicKeyOwner)
     const apiDescriptor = await this.getApiDescriptionFor(domain)
-    const url = apiDescriptor.capabilities.verifyPublicKeyOwner
+    const url = apiDescriptor.capabilities[Capabilities.verifyPublicKeyOwner]
       .replace('{alias}', alias).replace('{domain.tld}', domain).replace('{pubkey}', aPubkey)
     return url
   }
