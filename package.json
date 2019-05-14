@@ -25,7 +25,7 @@
   "private": true,
   "dependencies": {
     "@babel/runtime": "7.0.0",
-    "bsv": "0.26.4",
+    "bsv": "0.27.0",
     "isomorphic-fetch": "2.2.1",
     "moment": "2.24.0"
   },
