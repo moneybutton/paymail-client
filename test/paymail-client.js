@@ -95,7 +95,7 @@ describe('PaymailClient', () => {
     })
   })
 
-  describe('#getAddressFor', async () => {
+  describe('#getOutputFor', async () => {
     def('aDomain', () => 'example.tld')
     def('aPaymail', () => `somename@${get.aDomain}`)
     def('aPrivateKey', () => 'KxWjJiTRSA7oExnvbWRaCizYB42XMKPxyD6ryzANbdXCJw1fo4sR')
@@ -129,38 +129,38 @@ describe('PaymailClient', () => {
     })
 
     it('returns an output', async () => {
-      const resultOutput = await get.aClient.getAddressFor(get.aPaymail, get.senderInfo, get.aPrivateKey)
+      const resultOutput = await get.aClient.getOutputFor(get.aPaymail, get.senderInfo, get.aPrivateKey)
       expect(resultOutput).to.be.equal('some output')
     })
 
     it('queries the right endpoint', async () => {
-      await get.aClient.getAddressFor(get.aPaymail, get.senderInfo, get.aPrivateKey)
+      await get.aClient.getOutputFor(get.aPaymail, get.senderInfo, get.aPrivateKey)
       const amountOfRequests = amountOfRequestFor(`https://${get.aDomain}:80/api/v1/address/${get.aPaymail}`)
       expect(amountOfRequests).to.be.equal(1)
     })
 
     it('makes a post request', async () => {
-      await get.aClient.getAddressFor(get.aPaymail, get.senderInfo, get.aPrivateKey)
+      await get.aClient.getOutputFor(get.aPaymail, get.senderInfo, get.aPrivateKey)
       const requestDetails = requestsMadeTo(`https://${get.aDomain}:80/api/v1/address/${get.aPaymail}`)[0]
       expect(requestDetails.method).to.be.equal('POST')
     })
 
     it('sends content type json', async () => {
-      await get.aClient.getAddressFor(get.aPaymail, get.senderInfo, get.aPrivateKey)
+      await get.aClient.getOutputFor(get.aPaymail, get.senderInfo, get.aPrivateKey)
       const requestDetails = requestsMadeTo(`https://${get.aDomain}:80/api/v1/address/${get.aPaymail}`)[0]
       expect(requestDetails.headers).to.have.property('Content-Type')
       expect(requestDetails.headers['Content-Type']).to.match(/application\/json/)
     })
 
     it('sends a json with right properties', async () => {
-      await get.aClient.getAddressFor(get.aPaymail, get.senderInfo, get.aPrivateKey)
+      await get.aClient.getOutputFor(get.aPaymail, get.senderInfo, get.aPrivateKey)
       const requestDetails = requestsMadeTo(`https://${get.aDomain}:80/api/v1/address/${get.aPaymail}`)[0]
       const body = JSON.parse(requestDetails.body)
       expect(body).to.have.keys('senderPaymail', 'senderName', 'purpose', 'dt', 'signature', 'amount')
     })
 
     it('sends sends the info of the sender', async () => {
-      await get.aClient.getAddressFor(get.aPaymail, get.senderInfo, get.aPrivateKey)
+      await get.aClient.getOutputFor(get.aPaymail, get.senderInfo, get.aPrivateKey)
       const requestDetails = requestsMadeTo(`https://${get.aDomain}:80/api/v1/address/${get.aPaymail}`)[0]
       const body = JSON.parse(requestDetails.body)
       expect(body.senderPaymail).to.be.equal(get.senderInfo.senderPaymail)
@@ -169,14 +169,14 @@ describe('PaymailClient', () => {
     })
 
     it('sets amounts to null if not specified', async () => {
-      await get.aClient.getAddressFor(get.aPaymail, get.senderInfo, get.aPrivateKey)
+      await get.aClient.getOutputFor(get.aPaymail, get.senderInfo, get.aPrivateKey)
       const requestDetails = requestsMadeTo(`https://${get.aDomain}:80/api/v1/address/${get.aPaymail}`)[0]
       const body = JSON.parse(requestDetails.body)
       expect(body.amount).to.be.null
     })
 
     it('sends a valid signature', async () => {
-      await get.aClient.getAddressFor(get.aPaymail, get.senderInfo, get.aPrivateKey)
+      await get.aClient.getOutputFor(get.aPaymail, get.senderInfo, get.aPrivateKey)
       let requestDetails = requestsMadeTo(`https://${get.aDomain}:80/api/v1/address/${get.aPaymail}`)[0]
       let body = JSON.parse(requestDetails.body)
       expect(body.signature).to.be.equal(new VerifiableMessage([
@@ -193,7 +193,7 @@ describe('PaymailClient', () => {
 
       it('raises an error', async () => {
         try {
-          await get.aClient.getAddressFor(get.aPaymail, get.senderInfo, get.aPrivateKey)
+          await get.aClient.getOutputFor(get.aPaymail, get.senderInfo, get.aPrivateKey)
           assert.fail('should fail because the server returns an error')
         } catch (err) {
           expect(err.message).to.be.eql(`Paymail not found: ${get.aPaymail}`)
@@ -213,7 +213,7 @@ describe('PaymailClient', () => {
       }))
 
       it('those dt and signatures are used', async () => {
-        await get.aClient.getAddressFor(get.aPaymail, get.senderInfo)
+        await get.aClient.getOutputFor(get.aPaymail, get.senderInfo)
         let requestDetails = requestsMadeTo(`https://${get.aDomain}:80/api/v1/address/${get.aPaymail}`)[0]
         let body = JSON.parse(requestDetails.body)
         expect(body.dt).to.be.equal(get.aDT.toISOString())
@@ -224,7 +224,7 @@ describe('PaymailClient', () => {
         def('aSignature', () => undefined)
 
         it('ignores the dt and uses current datetime', async () => {
-          await get.aClient.getAddressFor(get.aPaymail, get.senderInfo, get.aPrivateKey)
+          await get.aClient.getOutputFor(get.aPaymail, get.senderInfo, get.aPrivateKey)
           let requestDetails = requestsMadeTo(`https://${get.aDomain}:80/api/v1/address/${get.aPaymail}`)[0]
           let body = JSON.parse(requestDetails.body)
           expect(body.dt).to.be.eq(get.now.toISOString())
@@ -232,7 +232,7 @@ describe('PaymailClient', () => {
 
         it('fails if the private key is not provided', async () => {
           try {
-            await get.aClient.getAddressFor(get.aPaymail, get.senderInfo)
+            await get.aClient.getOutputFor(get.aPaymail, get.senderInfo)
             assert.fail('should not work with no private key or signature')
           } catch (err) {
             const amountOfRequests = amountOfRequestFor(`https://${get.aDomain}:80/api/v1/address/${get.aPaymail}`)
@@ -246,7 +246,7 @@ describe('PaymailClient', () => {
 
         it('fails', async () => {
           try {
-            await get.aClient.getAddressFor(get.aPaymail, get.senderInfo)
+            await get.aClient.getOutputFor(get.aPaymail, get.senderInfo)
             assert.fail('should not work if signature is provided but the used nonce')
           } catch (err) {
             const amountOfRequests = amountOfRequestFor(`https://${get.aDomain}:80/api/v1/address/${get.aPaymail}`)
@@ -266,7 +266,7 @@ describe('PaymailClient', () => {
 
       it('raises an error', async () => {
         try {
-          await get.aClient.getAddressFor(get.aPaymail, get.senderInfo)
+          await get.aClient.getOutputFor(get.aPaymail, get.senderInfo)
           assert.fail('should raise error is capability is not defined')
         } catch (err) {
           expect(err.message).to.be.eq(`Unknown capability "paymentDestination" for "${get.aDomain}"`)

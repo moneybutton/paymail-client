@@ -38,7 +38,7 @@ class PaymailClient {
    * @param {String} senderInfo.signature - Optional. Valid signature according to paymail specification.
    * @param {String} privateKey - Optional. private key to sign the request.
    */
-  async getAddressFor (aPaymail, senderInfo, privateKey = null) {
+  async getOutputFor (aPaymail, senderInfo, privateKey = null) {
     const addressUrl = await this.resolver.getAddressUrlFor(aPaymail)
     const response = await this.fetch(addressUrl, {
       method: 'POST',

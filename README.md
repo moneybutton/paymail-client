@@ -20,7 +20,7 @@ client.getPublicKey(somePaymailAddress).then(pubkey => {
 
 // You can look for someones public identity key.
 const senderPrivateKey = 'L3kZEuaEgdfsV7BXCrwhs8E9BuJaN67HvdkSNTfy3CmKjbXkBEjX'
-client.getAddressFor(somePaymailAddress, {
+client.getOutputFor(somePaymailAddress, {
     senderPaymail: 'sender@moneybutton.com',
     amount: 10000, // Amount in satoshis
     senderName: 'Mr. Sender',
@@ -41,7 +41,7 @@ const preMadeSignature = VerifiableMessage.forBasicAddressResolution({
   purpose: 'Pay for your services.'
 }).sign('senderPrivateKey')
 
-client.getAddressFor(somePaymailAddress, {
+client.getOutputFor(somePaymailAddress, {
   senderPaymail: 'sender@moneybutton.com',
   amount: 10000, // Amount in satoshis
   senderName: 'Mr. Sender',
