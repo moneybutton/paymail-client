@@ -22,6 +22,9 @@
   "repository": "https://github.com/moneybutton/yours",
   "author": "Yours Inc.",
   "license": "Open-BSV",
+  "publishConfig": {
+    "access": "public"
+  },
   "dependencies": {
     "@babel/runtime": "7.0.0",
     "bsv": "0.27.0",
@@ -63,5 +66,5 @@
       "docs/"
     ]
   },
-  "gitHead": "1140693bf8eb445920deeb5d0c76e6e5ba341876"
+  "gitHead": "96f1d3e69bcb9fe4b07c2adecfcaa8880e5889ff"
 }
