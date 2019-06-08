@@ -40,11 +40,25 @@ class EndpointResolver {
   }
 
   async getApiDescriptionFor (aDomain) {
-    let finish
-    let fail
     if (this._cache[aDomain]) {
       return this._cache[aDomain]
     }
+    const { domain, port } = await this.getWellKnownBaseUrl(aDomain)
+    const apiDescriptor = this.fetchApiDescriptor(domain, port)
+    this._cache[aDomain] = apiDescriptor
+    return apiDescriptor
+  }
+
+  async fetchApiDescriptor (domain, port) {
+    const protocol = domain === 'localhost' ? 'http' : 'https'
+    const wellKnown = await this.fetch(`${protocol}://${domain}:${port}/.well-known/bsvalias`)
+    const apiDescriptor = await wellKnown.json()
+    return apiDescriptor
+  }
+
+  async getWellKnownBaseUrl (aDomain) {
+    let finish
+    let fail
 
     const result = new Promise((resolve, reject) => {
       finish = resolve
@@ -52,17 +66,27 @@ class EndpointResolver {
     })
 
     this.dns.resolveSrv(`_bsvalias._tcp.${aDomain}`, async (err, result) => {
-      if (err) {
-        fail(err)
-      }
+      try {
+        if (err && (err.code === 'ENODATA' || err.code === 'ENOTFOUND')) {
+          return finish({
+            domain: aDomain,
+            port: 443
+          })
+        }
+        if (err) {
+          return fail(err)
+        }
 
-      const { name, port } = result[0]
-      const protocol = name === 'localhost' ? 'http' : 'https'
-      const wellKnown = await this.fetch(`${protocol}://${name}:${port}/.well-known/bsvalias`)
-      const apiDescriptor = await wellKnown.json()
-      this._cache[aDomain] = apiDescriptor
-      finish(apiDescriptor)
+        const { name, port } = result[0]
+        finish({
+          domain: name,
+          port
+        })
+      } catch (err) {
+        return fail(err)
+      }
     })
+
     return result
   }
 
