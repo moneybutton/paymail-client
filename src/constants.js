@@ -1,6 +1,6 @@
 export const Capabilities = {
   pki: 'pki',
   paymentDestination: 'paymentDestination',
-  senderValidation: 'c318d09ed403',
+  senderValidation: '6745385c3fc0',
   verifyPublicKeyOwner: 'a9f510c16bde'
 }

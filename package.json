@@ -1,6 +1,6 @@
 {
   "name": "@moneybutton/paymail-client",
-  "version": "0.21.11",
+  "version": "0.22.0",
   "description": "Money Button isomorphic Paymail utilities.",
   "main": "dist/paymail-client.cjs.js",
   "module": "dist/paymail-client.esm.js",
