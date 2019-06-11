@@ -101,7 +101,7 @@ describe('PaymailClient', () => {
     def('aPrivateKey', () => 'KxWjJiTRSA7oExnvbWRaCizYB42XMKPxyD6ryzANbdXCJw1fo4sR')
     def('senderInfo', () => ({
       senderName: 'Some Guy',
-      senderPaymail: 'some@guy.org',
+      senderHandle: 'some@guy.org',
       purpose: 'Do some payment'
     }))
 
@@ -156,14 +156,14 @@ describe('PaymailClient', () => {
       await get.aClient.getOutputFor(get.aPaymail, get.senderInfo, get.aPrivateKey)
       const requestDetails = requestsMadeTo(`https://${get.aDomain}:80/api/v1/address/${get.aPaymail}`)[0]
       const body = JSON.parse(requestDetails.body)
-      expect(body).to.have.keys('senderPaymail', 'senderName', 'purpose', 'dt', 'signature', 'amount')
+      expect(body).to.have.keys('senderHandle', 'senderName', 'purpose', 'dt', 'signature', 'amount')
     })
 
     it('sends sends the info of the sender', async () => {
       await get.aClient.getOutputFor(get.aPaymail, get.senderInfo, get.aPrivateKey)
       const requestDetails = requestsMadeTo(`https://${get.aDomain}:80/api/v1/address/${get.aPaymail}`)[0]
       const body = JSON.parse(requestDetails.body)
-      expect(body.senderPaymail).to.be.equal(get.senderInfo.senderPaymail)
+      expect(body.senderHandle).to.be.equal(get.senderInfo.senderHandle)
       expect(body.senderName).to.be.equal(get.senderInfo.senderName)
       expect(body.purpose).to.be.equal(get.senderInfo.purpose)
     })
@@ -180,7 +180,7 @@ describe('PaymailClient', () => {
       let requestDetails = requestsMadeTo(`https://${get.aDomain}:80/api/v1/address/${get.aPaymail}`)[0]
       let body = JSON.parse(requestDetails.body)
       expect(body.signature).to.be.equal(new VerifiableMessage([
-        get.senderInfo.senderPaymail,
+        get.senderInfo.senderHandle,
         '0',
         get.now.toISOString(),
         get.senderInfo.purpose
@@ -206,7 +206,7 @@ describe('PaymailClient', () => {
       def('aSignature', () => 'some signature')
       def('senderInfo', () => ({
         senderName: 'Some Guy',
-        senderPaymail: 'some@guy.org',
+        senderHandle: 'some@guy.org',
         purpose: 'Do some payment',
         dt: get.aDT,
         signature: get.aSignature
@@ -381,7 +381,7 @@ describe('PaymailClient', () => {
 
       def('senderInfo', () => ({
         senderName: 'Some Guy',
-        senderPaymail: get.aPaymail,
+        senderHandle: get.aPaymail,
         purpose: 'Do some payment',
         pubkey: get.correspondingPublicKey.toString()
       }))
@@ -522,7 +522,7 @@ describe('PaymailClient', () => {
 
       def('senderInfo', () => ({
         senderName: 'Some Guy',
-        senderPaymail: get.aPaymail,
+        senderHandle: get.aPaymail,
         purpose: 'Do some payment'
       }))
 

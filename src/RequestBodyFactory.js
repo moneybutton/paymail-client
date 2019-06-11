@@ -6,7 +6,7 @@ class RequestBodyFactory {
   }
   buildBodyToRequestAddress (senderInfo, privateKey = null) {
     const {
-      senderPaymail,
+      senderHandle,
       amount,
       senderName,
       purpose,
@@ -28,7 +28,7 @@ class RequestBodyFactory {
     } else {
       dt = this.clock.now()
       signature = VerifiableMessage.forBasicAddressResolution({
-        senderPaymail,
+        senderHandle,
         amount,
         dt,
         purpose
@@ -36,7 +36,7 @@ class RequestBodyFactory {
     }
 
     return {
-      senderPaymail,
+      senderHandle,
       senderName,
       purpose,
       dt,

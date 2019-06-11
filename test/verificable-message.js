@@ -6,7 +6,7 @@ import moment from 'moment'
 describe('VerifiableMessage', () => {
   def('aPrivateKey', () => 'KxWjJiTRSA7oExnvbWRaCizYB42XMKPxyD6ryzANbdXCJw1fo4sR')
   def('messageData', () => ({
-    senderPaymail: 'some@paymail.com',
+    senderHandle: 'some@paymail.com',
     amount: '500',
     dt: moment('2019-03-01'),
     purpose: 'some reason'
@@ -16,7 +16,7 @@ describe('VerifiableMessage', () => {
     it('consideres the parameters in the right order', () => {
       const sign1 = VerifiableMessage.forBasicAddressResolution(get.messageData).sign(get.aPrivateKey)
       const sign2 = new VerifiableMessage([
-        get.messageData.senderPaymail,
+        get.messageData.senderHandle,
         get.messageData.amount,
         get.messageData.dt.toISOString(),
         get.messageData.purpose
@@ -35,7 +35,7 @@ describe('VerifiableMessage', () => {
       const sign1 = VerifiableMessage.forBasicAddressResolution(get.messageData).sign(get.aPrivateKey)
       const sign2 = VerifiableMessage.forBasicAddressResolution({
         ...get.messageData,
-        senderPaymail: 'another@paymail'
+        senderHandle: 'another@paymail'
       }).sign(get.aPrivateKey)
 
       expect(sign1).not.to.be.equals(sign2)

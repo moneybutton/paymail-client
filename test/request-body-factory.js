@@ -21,7 +21,7 @@ describe('PaymailClient', () => {
     def('aSignature', () => 'some signature')
     def('senderInfo', () => ({
       senderName: 'Some Guy',
-      senderPaymail: 'some@guy.org',
+      senderHandle: 'some@guy.org',
       purpose: 'Do some payment',
       dt: get.aDT,
       signature: get.aSignature
@@ -31,7 +31,7 @@ describe('PaymailClient', () => {
       it('returns right data', async () => {
         const body = get.subject.buildBodyToRequestAddress(get.senderInfo)
         expect(body).to.have.keys(
-          'senderPaymail',
+          'senderHandle',
           'senderName',
           'purpose',
           'dt',
@@ -43,7 +43,7 @@ describe('PaymailClient', () => {
 
       it('returns sender info', async () => {
         const body = get.subject.buildBodyToRequestAddress(get.senderInfo)
-        expect(body.senderPaymail).to.be.eq(get.senderInfo.senderPaymail)
+        expect(body.senderHandle).to.be.eq(get.senderInfo.senderHandle)
         expect(body.senderName).to.be.eq(get.senderInfo.senderName)
         expect(body.purpose).to.be.eq(get.senderInfo.purpose)
       })
@@ -87,7 +87,7 @@ describe('PaymailClient', () => {
       def('aPrivateKey', () => 'KxWjJiTRSA7oExnvbWRaCizYB42XMKPxyD6ryzANbdXCJw1fo4sR')
       def('senderInfo', () => ({
         senderName: 'Some Guy',
-        senderPaymail: 'some@guy.org',
+        senderHandle: 'some@guy.org',
         purpose: 'Do some payment'
       }))
 
@@ -95,7 +95,7 @@ describe('PaymailClient', () => {
         const body = get.subject.buildBodyToRequestAddress(get.senderInfo, get.aPrivateKey)
         expect(body.dt).to.be.eq(get.now)
         expect(body.signature).to.be.eq(new VerifiableMessage([
-          get.senderInfo.senderPaymail,
+          get.senderInfo.senderHandle,
           '0',
           get.now.toISOString(),
           get.senderInfo.purpose
@@ -105,7 +105,7 @@ describe('PaymailClient', () => {
       describe('when the signature and datetime are also given', () => {
         def('senderInfo', () => ({
           senderName: 'Some Guy',
-          senderPaymail: 'some@guy.org',
+          senderHandle: 'some@guy.org',
           purpose: 'Do some payment',
           dt: get.aDT,
           signature: get.aSignature
@@ -124,7 +124,7 @@ describe('PaymailClient', () => {
       def('aPrivateKey', () => 'KxWjJiTRSA7oExnvbWRaCizYB42XMKPxyD6ryzANbdXCJw1fo4sR')
       def('senderInfo', () => ({
         senderName: 'Some Guy',
-        senderPaymail: 'some@guy.org',
+        senderHandle: 'some@guy.org',
         purpose: 'Do some payment',
         amount: get.anAmount
       }))
@@ -132,7 +132,7 @@ describe('PaymailClient', () => {
       it('returns the amount in the body', async () => {
         const body = get.subject.buildBodyToRequestAddress(get.senderInfo, get.aPrivateKey)
         expect(body).to.have.keys(
-          'senderPaymail',
+          'senderHandle',
           'senderName',
           'purpose',
           'dt',

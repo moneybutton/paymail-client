@@ -30,7 +30,7 @@ class PaymailClient {
    *
    * @param {String} aPaymail - a paymail address
    * @param {Object} senderInfo - Object containing sender info
-   * @param {String} senderInfo.senderPaymail - Sender paymail address
+   * @param {String} senderInfo.senderHandle - Sender paymail address
    * @param {String} senderInfo.amount - Optional. Required amount.
    * @param {String} senderInfo.senderName - Optional. Sender name.
    * @param {String} senderInfo.purpose - Optional. Purpose of the payment.

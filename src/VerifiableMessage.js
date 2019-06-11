@@ -9,7 +9,7 @@ class VerifiableMessage {
   }
 
   static forBasicAddressResolution ({
-    senderPaymail,
+    senderHandle,
     amount,
     dt,
     purpose
@@ -19,7 +19,7 @@ class VerifiableMessage {
     }
 
     return new VerifiableMessage([
-      senderPaymail,
+      senderHandle,
       amount || '0',
       dt,
       purpose
