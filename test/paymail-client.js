@@ -571,4 +571,84 @@ describe('PaymailClient', () => {
       })
     })
   })
+
+  describe('#getPublicKey', async () => {
+    def('aDomain', () => 'example.tld')
+    def('aPaymail', () => `somename@${get.aDomain}`)
+    def('senderInfo', () => ({
+      senderName: 'Some Guy',
+      senderHandle: 'some@guy.org',
+      purpose: 'Do some payment'
+    }))
+
+    def('apiCapabilities', () => (
+      {
+        f12f968c92d6: `https://${get.aDomain}:80/api/v1/public-profile/{alias}@{domain.tld}`
+      }
+    ))
+
+    def('aName', () => 'some name')
+    def('anAvatar', () => 'some avatar url')
+
+    def('serverResponseBody', () => ({
+      name: get.aName,
+      avatar: get.anAvatar
+    }))
+
+    def('serverResponseStatus', () => 200)
+    beforeEach(() => {
+      get.dns.registerRecord(`_bsvalias._tcp.${get.aDomain}`, {
+        name: get.aDomain,
+        port: '80'
+      })
+      mockResponse(`https://${get.aDomain}:80/.well-known/bsvalias`,
+        {
+          bsvalias: '1.0',
+          capabilities: get.apiCapabilities
+        }
+      )
+      mockResponse(`https://${get.aDomain}:80/api/v1/public-profile/${get.aPaymail}`, get.serverResponseBody, get.serverResponseStatus)
+    })
+
+    it('returns the avatar and the name', async () => {
+      const result = await get.aClient.getPublicProfile(get.aPaymail)
+      expect(result).to.be.eql({
+        name: get.aName,
+        avatar: get.anAvatar
+      })
+    })
+
+    describe('when publicProfile capability is not defined', () => {
+      def('apiCapabilities', () => ({
+        f12f968c92d6: undefined
+      }))
+
+      it('raises an error', async () => {
+        try {
+          await get.aClient.getPublicProfile(get.aPaymail)
+          assert.fail('should raise error is capability is not defined')
+        } catch (err) {
+          expect(err.message).to.be.eq(`Unknown capability "f12f968c92d6" for "${get.aDomain}"`)
+        }
+      })
+    })
+
+    describe('when the the server responds with an error', () => {
+      def('serverResponseBody', () => ({
+        code: 'error',
+        message: 'some message'
+      }))
+
+      def('serverResponseStatus', () => 404)
+
+      it('raises an error', async () => {
+        try {
+          await get.aClient.getPublicProfile(get.aPaymail)
+          assert.fail('should raise error is the server returns an error')
+        } catch (err) {
+          expect(err.message).to.be.eq(`Server failed with: ${JSON.stringify(get.serverResponseBody)}`)
+        }
+      })
+    })
+  })
 })

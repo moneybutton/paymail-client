@@ -34,6 +34,15 @@ class EndpointResolver {
     return url
   }
 
+  async getPublicProfileUrlFor (aPaymail) {
+    const [ alias, domain ] = aPaymail.split('@')
+    await this.ensureCapabilityFor(domain, Capabilities.publicProfile)
+    const apiDescriptor = await this.getApiDescriptionFor(domain)
+    const url = apiDescriptor.capabilities[Capabilities.publicProfile]
+      .replace('{alias}', alias).replace('{domain.tld}', domain)
+    return url
+  }
+
   async domainHasCapability (aDomain, capability) {
     const apiDescriptor = await this.getApiDescriptionFor(aDomain)
     return !!apiDescriptor.capabilities[capability]

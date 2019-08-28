@@ -107,6 +107,23 @@ class PaymailClient {
       return false
     }
   }
+
+  /**
+   * Gets the public profile information using the "Public Profile" protocol.
+   *
+   * @param {String} paymail - a paymail address
+   * @param {String} s - the preferred size of the image
+   */
+  async getPublicProfile (paymail) {
+    let publicProfileUrl = await this.resolver.getPublicProfileUrlFor(paymail)
+    const response = await this.fetch(publicProfileUrl)
+    if (!response.ok) {
+      const body = await response.json()
+      throw new Error(`Server failed with: ${JSON.stringify(body)}`)
+    }
+    const { avatar, name } = await response.json()
+    return { avatar, name }
+  }
 }
 
 export { PaymailClient }
