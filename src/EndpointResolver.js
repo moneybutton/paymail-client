@@ -1,10 +1,23 @@
 import { Capabilities } from './constants'
+import { DnsClient } from './dns-client'
+import { DnsOverHttps } from './dns-over-https'
 
 class EndpointResolver {
-  constructor (dns, fetch) {
-    this.dns = dns
+  constructor (dns = null, fetch) {
+    if (dns !== null) {
+      this.dnsClient = new DnsClient(dns, new DnsOverHttps(fetch, { baseUrl: 'https://dns.google.com/resolve' }))
+    } else {
+      this.dnsClient = null
+    }
+
     this.fetch = fetch
     this._cache = {}
+  }
+
+  static create (dnsClient, fetch) {
+    const instance = new EndpointResolver(null, fetch)
+    instance.dnsClient = dnsClient
+    return instance
   }
 
   async getIdentityUrlFor (aPaymail) {
@@ -60,43 +73,13 @@ class EndpointResolver {
 
   async fetchApiDescriptor (domain, port) {
     const protocol = domain === 'localhost' ? 'http' : 'https'
-    const wellKnown = await this.fetch(`${protocol}://${domain}:${port}/.well-known/bsvalias`)
+    const wellKnown = await this.fetch(`${protocol}://${domain}:${port}/.well-known/bsvalias`, { credentials: 'omit' })
     const apiDescriptor = await wellKnown.json()
     return apiDescriptor
   }
 
   async getWellKnownBaseUrl (aDomain) {
-    let finish
-    let fail
-
-    const result = new Promise((resolve, reject) => {
-      finish = resolve
-      fail = reject
-    })
-
-    this.dns.resolveSrv(`_bsvalias._tcp.${aDomain}`, async (err, result) => {
-      try {
-        if (err && (err.code === 'ENODATA' || err.code === 'ENOTFOUND')) {
-          return finish({
-            domain: aDomain,
-            port: 443
-          })
-        }
-        if (err) {
-          return fail(err)
-        }
-
-        const { name, port } = result[0]
-        finish({
-          domain: name,
-          port
-        })
-      } catch (err) {
-        return fail(err)
-      }
-    })
-
-    return result
+    return this.dnsClient.checkSrv(aDomain)
   }
 
   async ensureCapabilityFor (aDomain, aCapability) {

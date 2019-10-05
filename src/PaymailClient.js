@@ -19,7 +19,7 @@ class PaymailClient {
    */
   async getPublicKey (paymail) {
     const identityUrl = await this.resolver.getIdentityUrlFor(paymail)
-    const response = await this.fetch(identityUrl)
+    const response = await this.fetch(identityUrl, { credentials: 'omit' })
     const { pubkey } = await response.json()
     return pubkey
   }
@@ -42,6 +42,7 @@ class PaymailClient {
     const addressUrl = await this.resolver.getAddressUrlFor(aPaymail)
     const response = await this.fetch(addressUrl, {
       method: 'POST',
+      credentials: 'omit',
       headers: {
         'Content-Type': 'application/json'
       },
@@ -63,7 +64,7 @@ class PaymailClient {
    */
   async verifyPubkeyOwner (pubkey, paymail) {
     const url = await this.resolver.getVerifyUrlFor(paymail, pubkey)
-    const response = await this.fetch(url)
+    const response = await this.fetch(url, { credentials: 'omit' })
     const body = await response.json()
     const { match } = body
     return match
@@ -116,7 +117,7 @@ class PaymailClient {
    */
   async getPublicProfile (paymail) {
     let publicProfileUrl = await this.resolver.getPublicProfileUrlFor(paymail)
-    const response = await this.fetch(publicProfileUrl)
+    const response = await this.fetch(publicProfileUrl, { credentials: 'omit' })
     if (!response.ok) {
       const body = await response.json()
       throw new Error(`Server failed with: ${JSON.stringify(body)}`)
