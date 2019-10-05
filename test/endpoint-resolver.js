@@ -213,6 +213,42 @@ describe('EndpointResolver', () => {
       })
     })
 
+    describe('when the srv record is present, it doesn\'t use dnssec but the domain is a moneybutton.com', () => {
+      def('apiDomain', () => `moneybutton.com`)
+      beforeEach(() => {
+        get.dns.registerRecord(`_bsvalias._tcp.${get.aDomain}`, {
+          name: get.apiDomain,
+          port: '80'
+        })
+        mockResponse(`https://${get.apiDomain}:80/.well-known/bsvalias`,
+          get.apiDescriptor
+        )
+      })
+
+      it('returns the api descriptor', async () => {
+        const apiDescriptor = await get.resolver.getApiDescriptionFor(get.aDomain)
+        expect(apiDescriptor).to.be.eql(get.apiDescriptor)
+      })
+    })
+
+    describe('when the srv record is present, it doesn\'t use dnssec but the domain is a www.moneybutton.com', () => {
+      def('apiDomain', () => `www.moneybutton.com`)
+      beforeEach(() => {
+        get.dns.registerRecord(`_bsvalias._tcp.${get.aDomain}`, {
+          name: get.apiDomain,
+          port: '80'
+        })
+        mockResponse(`https://${get.apiDomain}:80/.well-known/bsvalias`,
+          get.apiDescriptor
+        )
+      })
+
+      it('returns the api descriptor', async () => {
+        const apiDescriptor = await get.resolver.getApiDescriptionFor(get.aDomain)
+        expect(apiDescriptor).to.be.eql(get.apiDescriptor)
+      })
+    })
+
     describe('when the srv record present it doesn\'t use dnssec but the domain is an arbitrary subdomain and doesnt use dnsssec', () => {
       def('apiDomain', () => `www2.${get.aDomain}`)
       beforeEach(() => {
