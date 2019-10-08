@@ -4,11 +4,7 @@ import { DnsOverHttps } from './dns-over-https'
 
 class EndpointResolver {
   constructor (dns = null, fetch) {
-    if (dns !== null) {
-      this.dnsClient = new DnsClient(dns, new DnsOverHttps(fetch, { baseUrl: 'https://dns.google.com/resolve' }))
-    } else {
-      this.dnsClient = null
-    }
+    this.dnsClient = new DnsClient(dns, new DnsOverHttps(fetch, { baseUrl: 'https://dns.google.com/resolve' }))
 
     this.fetch = fetch
     this._cache = {}

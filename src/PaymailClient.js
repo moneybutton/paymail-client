@@ -4,11 +4,19 @@ import { RequestBodyFactory } from './RequestBodyFactory'
 import { Clock } from './Clock'
 import { PaymailNotFound } from './errors/PaymailNotFound'
 import { Capabilities } from './constants'
+import fetch from 'isomorphic-fetch'
+import { BrowserDns } from './BrowserDns'
 
 class PaymailClient {
-  constructor (dns, fetch, clock = null) {
-    this.resolver = new EndpointResolver(dns, fetch)
-    this.fetch = fetch
+  constructor (dns = null, fetch2 = null, clock = null) {
+    if (fetch2 === null) {
+      fetch2 = fetch
+    }
+    if (dns === null) {
+      dns = new BrowserDns(fetch2)
+    }
+    this.resolver = new EndpointResolver(dns, fetch2)
+    this.fetch = fetch2
     this.requestBodyFactory = new RequestBodyFactory(clock !== null ? clock : new Clock())
   }
 
@@ -25,7 +33,7 @@ class PaymailClient {
   }
 
   /**
-   * Uses `Basic Address Reslotion` flow to query for a payment for output for the
+   * Uses `Basic Address Resolution` flow to query for a payment for output for the
    * given paymail address.
    *
    * @param {String} aPaymail - a paymail address
