@@ -1,5 +1,4 @@
 import { EndpointResolver } from './EndpointResolver'
-import bsv from 'bsv'
 import { RequestBodyFactory } from './RequestBodyFactory'
 import { Clock } from './Clock'
 import { PaymailNotFound } from './errors/PaymailNotFound'
@@ -8,7 +7,10 @@ import fetch from 'isomorphic-fetch'
 import { BrowserDns } from './BrowserDns'
 
 class PaymailClient {
-  constructor (dns = null, fetch2 = null, clock = null) {
+  constructor (dns = null, fetch2 = null, clock = null, bsv = null) {
+    if (bsv === null) {
+      this.bsv = require('bsv')
+    }
     if (fetch2 === null) {
       fetch2 = fetch
     }
@@ -95,7 +97,7 @@ class PaymailClient {
     let senderPublicKey
     if (pubkey && await this.resolver.domainHasCapability(paymail.split('@')[1], Capabilities.verifyPublicKeyOwner)) {
       if (await this.verifyPubkeyOwner(pubkey, paymail)) {
-        senderPublicKey = bsv.PublicKey.fromString(pubkey)
+        senderPublicKey = this.bsv.PublicKey.fromString(pubkey)
       } else {
         return false
       }
@@ -103,13 +105,13 @@ class PaymailClient {
       const hasPki = await this.resolver.domainHasCapability(paymail.split('@')[1], Capabilities.pki)
       if (hasPki) {
         const identityKey = await this.getPublicKey(paymail)
-        senderPublicKey = bsv.PublicKey.fromString(identityKey)
+        senderPublicKey = this.bsv.PublicKey.fromString(identityKey)
       } else {
         return false
       }
     }
 
-    const senderKeyAddress = bsv.Address.fromPublicKey(senderPublicKey)
+    const senderKeyAddress = this.bsv.Address.fromPublicKey(senderPublicKey)
     try {
       return message.verify(senderKeyAddress.toString(), signature)
     } catch (err) {
