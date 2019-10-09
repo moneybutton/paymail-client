@@ -8,15 +8,16 @@ import { BrowserDns } from './BrowserDns'
 
 class PaymailClient {
   constructor (dns = null, fetch2 = null, clock = null, bsv = null) {
-    if (bsv === null) {
-      this.bsv = require('bsv')
-    }
     if (fetch2 === null) {
       fetch2 = fetch
     }
     if (dns === null) {
       dns = new BrowserDns(fetch2)
     }
+    if (bsv === null) {
+      bsv = require('bsv')
+    }
+    this.bsv = bsv
     this.resolver = new EndpointResolver(dns, fetch2)
     this.fetch = fetch2
     this.requestBodyFactory = new RequestBodyFactory(clock !== null ? clock : new Clock())
@@ -84,7 +85,8 @@ class PaymailClient {
    * Verifies if a given signature is valid for a given message. It uses
    * different strategies depending on the capabilities of the server
    * and the parameters Given. The priority order is.
-   * - Use provided key (and check that belongs to given paymail address)
+   * - If paymail is not provided, then normal signature verification is performed.
+   * - Use provided key (and check that belongs to given paymail address).
    * - Get a new pubkey for given paymail address using pki.
    * - If there is no way to intereact with the owner of the domain to verify the public key it returns false.
    *
@@ -93,27 +95,33 @@ class PaymailClient {
    * @param {String} paymail - Signature owner paymail
    * @param {String} pubkey - Optional. Public key that validates the signature.
    */
-  async isValidSignature (message, signature, paymail, pubkey = null) {
+  async isValidSignature (message, signature, paymail = null, pubkey = null) {
+    if (paymail == null && pubkey === null) {
+      throw new Error('Must specify either paymail or pubkey')
+    }
     let senderPublicKey
-    if (pubkey && await this.resolver.domainHasCapability(paymail.split('@')[1], Capabilities.verifyPublicKeyOwner)) {
-      if (await this.verifyPubkeyOwner(pubkey, paymail)) {
-        senderPublicKey = this.bsv.PublicKey.fromString(pubkey)
+    if (paymail) {
+      if (pubkey && await this.resolver.domainHasCapability(paymail.split('@')[1], Capabilities.verifyPublicKeyOwner)) {
+        if (await this.verifyPubkeyOwner(pubkey, paymail)) {
+          senderPublicKey = this.bsv.PublicKey.fromString(pubkey)
+        } else {
+          return false
+        }
       } else {
-        return false
-      }
-    } else {
-      const hasPki = await this.resolver.domainHasCapability(paymail.split('@')[1], Capabilities.pki)
-      if (hasPki) {
-        const identityKey = await this.getPublicKey(paymail)
-        senderPublicKey = this.bsv.PublicKey.fromString(identityKey)
-      } else {
-        return false
+        const hasPki = await this.resolver.domainHasCapability(paymail.split('@')[1], Capabilities.pki)
+        if (hasPki) {
+          const identityKey = await this.getPublicKey(paymail)
+          senderPublicKey = this.bsv.PublicKey.fromString(identityKey)
+        } else {
+          return false
+        }
       }
     }
 
-    const senderKeyAddress = this.bsv.Address.fromPublicKey(senderPublicKey)
+    const senderKeyAddress = this.bsv.Address.fromPublicKey(senderPublicKey || pubkey)
     try {
-      return message.verify(senderKeyAddress.toString(), signature)
+      const verified = message.verify(senderKeyAddress.toString(), signature)
+      return verified
     } catch (err) {
       return false
     }
