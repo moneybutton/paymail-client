@@ -1,11 +1,13 @@
-import bsv from 'bsv'
-import Message from 'bsv/message'
-
 class VerifiableMessage {
-  constructor (parts) {
+  constructor (parts, bsv = null) {
+    if (bsv === null) {
+      bsv = require('bsv')
+      bsv.Message = require('bsv/message')
+    }
+    this.bsv = bsv
     const concatenated = Buffer.from(parts.join(''))
-    const hashed = bsv.crypto.Hash.sha256(concatenated).toString('hex')
-    this.message = new Message(hashed)
+    const hashed = this.bsv.crypto.Hash.sha256(concatenated).toString('hex')
+    this.message = new this.bsv.Message(hashed)
   }
 
   static forBasicAddressResolution ({
@@ -27,7 +29,7 @@ class VerifiableMessage {
   }
 
   sign (wifPrivateKey) {
-    return this.message.sign(bsv.PrivateKey.fromWIF(wifPrivateKey))
+    return this.message.sign(this.bsv.PrivateKey.fromWIF(wifPrivateKey))
   }
 
   verify (keyAddress, signature) {
