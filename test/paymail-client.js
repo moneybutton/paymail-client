@@ -572,6 +572,122 @@ describe('PaymailClient', () => {
     })
   })
 
+  describe('#sendRawTx', () => {
+    def('aDomain', () => 'example.tld')
+    def('targetPaymail', () => `someone@${get.aDomain}`)
+
+    def('apiCapabilities', () => ({}))
+    beforeEach(() => {
+      get.dns.registerRecord(`_bsvalias._tcp.${get.aDomain}`, {
+        name: get.aDomain,
+        port: '80'
+      })
+      mockResponse(`https://${get.aDomain}:80/.well-known/bsvalias`,
+        {
+          bsvalias: '1.0',
+          capabilities: get.apiCapabilities
+        }
+      )
+    })
+
+    describe('when the capability is not defined', () => {
+      it('raises an error', async () => {
+        try {
+          await get.aClient.sendRawTx(get.targetPaymail, [
+            { hex: 'asdasdadsa' }
+          ], {}, null)
+          assert.fail('should raise error if capability is not defined')
+        } catch (err) {
+          expect(err.message).to.be.eq(`Unknown capability "receive-transactions-alpha-state" for "${get.aDomain}"`)
+        }
+      })
+    })
+
+    describe('when the capability is defined but the api call fails', () => {
+      def('apiCapabilities', () => ({
+        'receive-transactions-alpha-state': `https://${get.aDomain}:80/api/v1/public-profile/{alias}@{domain.tld}`
+      }))
+
+      beforeEach(() => {
+        get.dns.registerRecord(`_bsvalias._tcp.${get.aDomain}`, {
+          name: get.aDomain,
+          port: '80'
+        })
+        mockResponse(`https://${get.aDomain}:80/api/v1/public-profile/${get.targetPaymail}`,
+          {
+            code: 'internal-server-error',
+            message: 'something really bad had just happened'
+          },
+          500
+        )
+      })
+
+      it('raises an error', async () => {
+        try {
+          await get.aClient.sendRawTx(get.targetPaymail, [
+            { hex: 'asdasdadsa' }
+          ], {}, null)
+          assert.fail('should raise error if capability is not defined')
+        } catch (err) {
+          expect(err.message).to.match(/^Server failed with:/)
+        }
+      })
+    })
+
+    describe('when the capability is defined', () => {
+      def('apiCapabilities', () => ({
+        'receive-transactions-alpha-state': `https://${get.aDomain}:80/api/v1/public-profile/{alias}@{domain.tld}`
+      }))
+
+      beforeEach(() => {
+        mockResponse(`https://${get.aDomain}:80/api/v1/public-profile/${get.targetPaymail}`,
+          {
+            message: 'ok',
+            txids: ['some id']
+          }
+        )
+      })
+
+      it('makes the right api call', async () => {
+        await get.aClient.sendRawTx(get.targetPaymail, [
+          { hex: 'asdasdadsa' }
+        ], {}, null)
+        const requestMade = amountOfRequestFor(`https://${get.aDomain}:80/api/v1/public-profile/${get.targetPaymail}`)
+        expect(requestMade).to.be.eql(1)
+      })
+
+      it('returns what is returned by the API', async () => {
+        const response = await get.aClient.sendRawTx(get.targetPaymail, [
+          { hex: 'asdasdadsa' }
+        ], {}, null)
+        expect(response).to.be.eql({
+          message: 'ok',
+          txids: ['some id']
+        })
+      })
+
+      it('fails if any of the transactions has no "hex" attribute', async () => {
+        try {
+          await get.aClient.sendRawTx(get.targetPaymail, [
+            { rawtx: 'asdasdadsa' }
+          ], {}, null)
+          assert.fail('should raise error if capability is not defined')
+        } catch (err) {
+          expect(err.message).to.be.eq(`Transactions should include "hex" field`)
+        }
+      })
+
+      it('fails if the list of transactions is empty', async () => {
+        try {
+          await get.aClient.sendRawTx(get.targetPaymail, [], {}, null)
+          assert.fail('should raise error if no transactions are given')
+        } catch (err) {
+          expect(err.message).to.be.eq(`Transaction array should not be empty.`)
+        }
+      })
+    })
+  })
+
   describe('#getPublicKey', async () => {
     def('aDomain', () => 'example.tld')
     def('aPaymail', () => `somename@${get.aDomain}`)

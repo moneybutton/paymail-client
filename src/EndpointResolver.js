@@ -52,6 +52,15 @@ class EndpointResolver {
     return url
   }
 
+  async getSendTxUrlFor (aPaymail) {
+    const [ alias, domain ] = aPaymail.split('@')
+    await this.ensureCapabilityFor(domain, Capabilities.receiveTransaction)
+    const apiDescriptor = await this.getApiDescriptionFor(domain)
+    const url = apiDescriptor.capabilities[Capabilities.receiveTransaction]
+      .replace('{alias}', alias).replace('{domain.tld}', domain)
+    return url
+  }
+
   async domainHasCapability (aDomain, capability) {
     const apiDescriptor = await this.getApiDescriptionFor(aDomain)
     return !!apiDescriptor.capabilities[capability]

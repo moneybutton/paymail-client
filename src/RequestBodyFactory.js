@@ -45,6 +45,10 @@ class RequestBodyFactory {
       signature
     }
   }
+
+  buildBodySendTx (transactions, metadata, reference) {
+    return { transactions, metadata, reference }
+  }
 }
 
 export { RequestBodyFactory }

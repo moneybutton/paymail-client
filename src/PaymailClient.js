@@ -143,6 +143,28 @@ class PaymailClient {
     const { avatar, name } = await response.json()
     return { avatar, name }
   }
+
+  async sendRawTx (targetPaymail, transactions = [], metadata = {}, reference = null) {
+    if (!transactions.every(tx => tx.hex)) {
+      throw new Error('Transactions should include "hex" field')
+    }
+    if (transactions.length === 0) {
+      throw new Error('Transaction array should not be empty.')
+    }
+    let receiveTxUrl = await this.resolver.getSendTxUrlFor(targetPaymail)
+    const response = await this.fetch(receiveTxUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(this.requestBodyFactory.buildBodySendTx(transactions, metadata, reference))
+    })
+    if (!response.ok) {
+      const body = await response.json()
+      throw new Error(`Server failed with: ${JSON.stringify(body)}`)
+    }
+    return response.json()
+  }
 }
 
 export { PaymailClient }
