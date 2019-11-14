@@ -49,7 +49,7 @@ class DnsClient {
     } else if (this.responseIsWwwSubdomain(srvResponseDomain, originalDomain)) {
       return true
     } else if (this.isHandcashDomain(originalDomain)) { // tell rafa to fix handcash and we can remove the special case :)
-      return this.domainsAreEqual('handcash-paymail-production.herokuapp.com', srvResponseDomain)
+      return this.domainsAreEqual('handcash-paymail-production.herokuapp.com', srvResponseDomain) || this.domainsAreEqual('handcash-cloud-production.herokuapp.com', srvResponseDomain)
     } else if (this.isHandcashInternalDomain(originalDomain)) {
       return this.domainsAreEqual('handcash-cloud-staging.herokuapp.com', srvResponseDomain)
     } else if (this.domainsAreEqual('localhost', srvResponseDomain)) {
@@ -80,13 +80,13 @@ class DnsClient {
   async validateDnssec (aDomain) {
     const dnsResponse = await this.doh.queryBsvaliasDomain(aDomain)
     if (dnsResponse.Status !== 0 || !dnsResponse.Answer) {
-      throw new Error('Insecure domain.')
+      throw new Error(`Insecure domain.`)
     }
     const data = dnsResponse.Answer[0].data.split(' ')
     const port = data[2]
     const responseDomain = data[3]
     if (!dnsResponse.AD && !this.domainsAreEqual(aDomain, responseDomain)) {
-      throw new Error('Insecure domain.')
+      throw new Error(`Insecure domain.`)
     }
     return {
       port,
