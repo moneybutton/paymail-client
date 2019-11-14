@@ -50,6 +50,8 @@ class DnsClient {
       return true
     } else if (this.isHandcashDomain(originalDomain)) { // tell rafa to fix handcash and we can remove the special case :)
       return this.domainsAreEqual('handcash-paymail-production.herokuapp.com', srvResponseDomain)
+    } else if (this.isHandcashInternalDomain(originalDomain)) {
+      return this.domainsAreEqual('handcash-cloud-staging.herokuapp.com', srvResponseDomain)
     } else if (this.domainsAreEqual('localhost', srvResponseDomain)) {
       return true
     } else if (this.isMoneyButtonDomain(srvResponseDomain)) {
@@ -69,6 +71,10 @@ class DnsClient {
 
   isHandcashDomain (aDomain) {
     return this.domainsAreEqual('handcash.io', aDomain)
+  }
+
+  isHandcashInternalDomain (aDomain) {
+    return this.domainsAreEqual('internal.handcash.io', aDomain)
   }
 
   async validateDnssec (aDomain) {
