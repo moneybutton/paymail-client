@@ -4,10 +4,10 @@
 
 Javascript client to interact with BSV paymail protocol.
 
-## Ussage.
+## Usage.
 
 ``` javascript
-import { PaymailClient, Verifi } from '@moneybutton/paymail-client'
+import { PaymailClient, VerifiableMessage } from '@moneybutton/paymail-client'
 import fetch from 'isomorphic-fetch'
 import dns from 'dns'
 import bsv from 'bsv'
@@ -31,15 +31,13 @@ client.getOutputFor(somePaymailAddress, {
 })
 
 // You can also use a previously created signature instead of passing in the private key.
-import { VerifiableMessage } from '@moneybutton/paymail-client'
-
 const timestamp = new Date().toISOString()
 const preMadeSignature = VerifiableMessage.forBasicAddressResolution({
   senderHandle: 'sender@moneybutton.com',
   amount: 10000,
   dt: timestamp,
   purpose: 'Pay for your services.'
-}).sign('senderPrivateKey')
+}).sign(senderPrivateKey)
 
 client.getOutputFor(somePaymailAddress, {
   senderHandle: 'sender@moneybutton.com',
@@ -55,7 +53,7 @@ client.getOutputFor(somePaymailAddress, {
 // You can check if a given key belongs to a given paymail
 const somePubKey = bsv.PrivateKey.fromRandom().publicKey.toString()
 client.verifyPubkeyOwner(somePubKey, 'someuser@moneybutton.com').then(aBoolean => {
-  console.log(`The key ${somePubKey} ${aBoleean ? 'does' : 'doesn\'t'} belongs to someuser@moneybutton.com`)
+  console.log(`The key ${somePubKey} ${aBoolean ? 'does' : 'doesn\'t'} belongs to someuser@moneybutton.com`)
 })
 
 
