@@ -96,7 +96,7 @@ class DnsClient {
   }
 
   domainsAreEqual (domain1, domain2) {
-    return domain1.replace(/\.$/, '') === domain2.replace(/\.$/, '')
+    return domain1.toLowerCase().replace(/\.$/, '') === domain2.toLowerCase().replace(/\.$/, '')
   }
 }
 
