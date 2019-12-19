@@ -1,12 +1,13 @@
-import { Capabilities } from './constants'
+import { CapabilityCodes } from './constants'
 import { DnsClient } from './dns-client'
 import { DnsOverHttps } from './dns-over-https'
+import { Http } from './http'
 
 class EndpointResolver {
   constructor (dns = null, fetch) {
     this.dnsClient = new DnsClient(dns, new DnsOverHttps(fetch, { baseUrl: 'https://dns.google.com/resolve' }))
 
-    this.fetch = fetch
+    this.http = new Http(fetch)
     this._cache = {}
   }
 
@@ -18,7 +19,7 @@ class EndpointResolver {
 
   async getIdentityUrlFor (aPaymail) {
     const [alias, domain] = aPaymail.split('@')
-    await this.ensureCapabilityFor(domain, Capabilities.pki)
+    await this.ensureCapabilityFor(domain, CapabilityCodes.pki)
     const apiDescriptor = await this.getApiDescriptionFor(domain)
     const identityUrl = apiDescriptor.capabilities.pki
       .replace('{alias}', alias).replace('{domain.tld}', domain)
@@ -27,7 +28,7 @@ class EndpointResolver {
 
   async getAddressUrlFor (aPaymail) {
     const [ alias, domain ] = aPaymail.split('@')
-    await this.ensureCapabilityFor(domain, Capabilities.paymentDestination)
+    await this.ensureCapabilityFor(domain, CapabilityCodes.paymentDestination)
     const apiDescriptor = await this.getApiDescriptionFor(domain)
     const addressUrl = apiDescriptor.capabilities.paymentDestination
       .replace('{alias}', alias).replace('{domain.tld}', domain)
@@ -36,27 +37,27 @@ class EndpointResolver {
 
   async getVerifyUrlFor (aPaymail, aPubkey) {
     const [ alias, domain ] = aPaymail.split('@')
-    await this.ensureCapabilityFor(domain, Capabilities.verifyPublicKeyOwner)
+    await this.ensureCapabilityFor(domain, CapabilityCodes.verifyPublicKeyOwner)
     const apiDescriptor = await this.getApiDescriptionFor(domain)
-    const url = apiDescriptor.capabilities[Capabilities.verifyPublicKeyOwner]
+    const url = apiDescriptor.capabilities[CapabilityCodes.verifyPublicKeyOwner]
       .replace('{alias}', alias).replace('{domain.tld}', domain).replace('{pubkey}', aPubkey)
     return url
   }
 
   async getPublicProfileUrlFor (aPaymail) {
     const [ alias, domain ] = aPaymail.split('@')
-    await this.ensureCapabilityFor(domain, Capabilities.publicProfile)
+    await this.ensureCapabilityFor(domain, CapabilityCodes.publicProfile)
     const apiDescriptor = await this.getApiDescriptionFor(domain)
-    const url = apiDescriptor.capabilities[Capabilities.publicProfile]
+    const url = apiDescriptor.capabilities[CapabilityCodes.publicProfile]
       .replace('{alias}', alias).replace('{domain.tld}', domain)
     return url
   }
 
   async getSendTxUrlFor (aPaymail) {
     const [ alias, domain ] = aPaymail.split('@')
-    await this.ensureCapabilityFor(domain, Capabilities.receiveTransaction)
+    await this.ensureCapabilityFor(domain, CapabilityCodes.receiveTransaction)
     const apiDescriptor = await this.getApiDescriptionFor(domain)
-    const url = apiDescriptor.capabilities[Capabilities.receiveTransaction]
+    const url = apiDescriptor.capabilities[CapabilityCodes.receiveTransaction]
       .replace('{alias}', alias).replace('{domain.tld}', domain)
     return url
   }
@@ -78,7 +79,7 @@ class EndpointResolver {
 
   async fetchApiDescriptor (domain, port) {
     const protocol = (domain === 'localhost' || domain === 'localhost.') ? 'http' : 'https'
-    const wellKnown = await this.fetch(`${protocol}://${domain}:${port}/.well-known/bsvalias`, { credentials: 'omit' })
+    const wellKnown = await this.http.get(`${protocol}://${domain}:${port}/.well-known/bsvalias`)
     const apiDescriptor = await wellKnown.json()
     return apiDescriptor
   }

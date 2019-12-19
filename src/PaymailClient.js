@@ -2,9 +2,10 @@ import { EndpointResolver } from './EndpointResolver'
 import { RequestBodyFactory } from './RequestBodyFactory'
 import { Clock } from './Clock'
 import { PaymailNotFound } from './errors/PaymailNotFound'
-import { Capabilities } from './constants'
+import { CapabilityCodes } from './constants'
 import fetch from 'isomorphic-fetch'
 import { BrowserDns } from './BrowserDns'
+import { Http } from './http'
 
 class PaymailClient {
   constructor (dns = null, fetch2 = null, clock = null, bsv = null) {
@@ -19,7 +20,7 @@ class PaymailClient {
     }
     this.bsv = bsv
     this.resolver = new EndpointResolver(dns, fetch2)
-    this.fetch = fetch2
+    this.http = new Http(fetch2)
     this.requestBodyFactory = new RequestBodyFactory(clock !== null ? clock : new Clock())
   }
 
@@ -30,7 +31,7 @@ class PaymailClient {
    */
   async getPublicKey (paymail) {
     const identityUrl = await this.resolver.getIdentityUrlFor(paymail)
-    const response = await this.fetch(identityUrl, { credentials: 'omit' })
+    const response = await this.http.get(identityUrl)
     const { pubkey } = await response.json()
     return pubkey
   }
@@ -51,14 +52,10 @@ class PaymailClient {
    */
   async getOutputFor (aPaymail, senderInfo, privateKey = null) {
     const addressUrl = await this.resolver.getAddressUrlFor(aPaymail)
-    const response = await this.fetch(addressUrl, {
-      method: 'POST',
-      credentials: 'omit',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(this.requestBodyFactory.buildBodyToRequestAddress(senderInfo, privateKey))
-    })
+    const response = await this.http.postJson(
+      addressUrl,
+      this.requestBodyFactory.buildBodyToRequestAddress(senderInfo, privateKey)
+    )
     if (!response.ok) {
       throw new PaymailNotFound(`Paymail not found: ${aPaymail}`, aPaymail)
     }
@@ -75,7 +72,7 @@ class PaymailClient {
    */
   async verifyPubkeyOwner (pubkey, paymail) {
     const url = await this.resolver.getVerifyUrlFor(paymail, pubkey)
-    const response = await this.fetch(url, { credentials: 'omit' })
+    const response = await this.http.get(url)
     const body = await response.json()
     const { match } = body
     return match
@@ -101,14 +98,14 @@ class PaymailClient {
     }
     let senderPublicKey
     if (paymail) {
-      if (pubkey && await this.resolver.domainHasCapability(paymail.split('@')[1], Capabilities.verifyPublicKeyOwner)) {
+      if (pubkey && await this.resolver.domainHasCapability(paymail.split('@')[1], CapabilityCodes.verifyPublicKeyOwner)) {
         if (await this.verifyPubkeyOwner(pubkey, paymail)) {
           senderPublicKey = this.bsv.PublicKey.fromString(pubkey)
         } else {
           return false
         }
       } else {
-        const hasPki = await this.resolver.domainHasCapability(paymail.split('@')[1], Capabilities.pki)
+        const hasPki = await this.resolver.domainHasCapability(paymail.split('@')[1], CapabilityCodes.pki)
         if (hasPki) {
           const identityKey = await this.getPublicKey(paymail)
           senderPublicKey = this.bsv.PublicKey.fromString(identityKey)
@@ -135,7 +132,7 @@ class PaymailClient {
    */
   async getPublicProfile (paymail) {
     let publicProfileUrl = await this.resolver.getPublicProfileUrlFor(paymail)
-    const response = await this.fetch(publicProfileUrl, { credentials: 'omit' })
+    const response = await this.http.get(publicProfileUrl)
     if (!response.ok) {
       const body = await response.json()
       throw new Error(`Server failed with: ${JSON.stringify(body)}`)
@@ -152,13 +149,10 @@ class PaymailClient {
       throw new Error('Transaction array should not be empty.')
     }
     let receiveTxUrl = await this.resolver.getSendTxUrlFor(targetPaymail)
-    const response = await this.fetch(receiveTxUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(this.requestBodyFactory.buildBodySendTx(transactions, metadata, reference))
-    })
+    const response = await this.http.postJson(
+      receiveTxUrl,
+      JSON.stringify(this.requestBodyFactory.buildBodySendTx(transactions, metadata, reference))
+    )
     if (!response.ok) {
       const body = await response.json()
       throw new Error(`Server failed with: ${JSON.stringify(body)}`)
