@@ -677,6 +677,16 @@ describe('PaymailClient', () => {
         }
       })
 
+      it('sends the right data', async () => {
+        await get.aClient.sendRawTx(get.targetPaymail, [
+          { hex: 'asdasdadsa' }
+        ], {}, null)
+        const requests = requestsMadeTo(`https://${get.aDomain}:80/api/v1/public-profile/${get.targetPaymail}`)
+        expect(JSON.parse(requests[0].body)).to.be.eql(
+          { transactions: [{ hex: 'asdasdadsa' }], metadata: {}, reference: null }
+        )
+      })
+
       it('fails if the list of transactions is empty', async () => {
         try {
           await get.aClient.sendRawTx(get.targetPaymail, [], {}, null)

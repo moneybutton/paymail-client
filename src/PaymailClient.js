@@ -151,7 +151,7 @@ class PaymailClient {
     let receiveTxUrl = await this.resolver.getSendTxUrlFor(targetPaymail)
     const response = await this.http.postJson(
       receiveTxUrl,
-      JSON.stringify(this.requestBodyFactory.buildBodySendTx(transactions, metadata, reference))
+      this.requestBodyFactory.buildBodySendTx(transactions, metadata, reference)
     )
     if (!response.ok) {
       const body = await response.json()
