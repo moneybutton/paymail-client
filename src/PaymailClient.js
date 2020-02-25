@@ -141,17 +141,14 @@ class PaymailClient {
     return { avatar, name }
   }
 
-  async sendRawTx (targetPaymail, transactions = [], metadata = {}, reference = null) {
-    if (!transactions.every(tx => tx.hex)) {
-      throw new Error('Transactions should include "hex" field')
-    }
-    if (transactions.length === 0) {
-      throw new Error('Transaction array should not be empty.')
+  async sendRawTx (targetPaymail, hexTransaction, metadata = {}) {
+    if (!hexTransaction) {
+      throw new Error('transaction hex cannot be empty')
     }
     let receiveTxUrl = await this.resolver.getSendTxUrlFor(targetPaymail)
     const response = await this.http.postJson(
       receiveTxUrl,
-      this.requestBodyFactory.buildBodySendTx(transactions, metadata, reference)
+      this.requestBodyFactory.buildBodySendTx(hexTransaction, metadata)
     )
     if (!response.ok) {
       const body = await response.json()

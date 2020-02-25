@@ -46,8 +46,8 @@ class RequestBodyFactory {
     }
   }
 
-  buildBodySendTx (transactions, metadata, reference) {
-    return { transactions, metadata, reference }
+  buildBodySendTx (hexTransaction, metadata) {
+    return { hex: hexTransaction, metadata }
   }
 }
 

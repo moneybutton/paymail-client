@@ -642,8 +642,7 @@ describe('PaymailClient', () => {
       beforeEach(() => {
         mockResponse(`https://${get.aDomain}:80/api/v1/public-profile/${get.targetPaymail}`,
           {
-            message: 'ok',
-            txids: ['some id']
+            message: 'ok'
           }
         )
       })
@@ -657,43 +656,36 @@ describe('PaymailClient', () => {
       })
 
       it('returns what is returned by the API', async () => {
-        const response = await get.aClient.sendRawTx(get.targetPaymail, [
-          { hex: 'asdasdadsa' }
-        ], {}, null)
+        const response = await get.aClient.sendRawTx(get.targetPaymail, 'asdasdadsa', {})
         expect(response).to.be.eql({
-          message: 'ok',
-          txids: ['some id']
+          message: 'ok'
         })
       })
 
-      it('fails if any of the transactions has no "hex" attribute', async () => {
+      it('fails if the hex transaction is falsey', async () => {
         try {
-          await get.aClient.sendRawTx(get.targetPaymail, [
-            { rawtx: 'asdasdadsa' }
-          ], {}, null)
-          assert.fail('should raise error if capability is not defined')
+          await get.aClient.sendRawTx(get.targetPaymail, null, {})
+          assert.fail('should raise error transaction is null')
         } catch (err) {
-          expect(err.message).to.be.eq(`Transactions should include "hex" field`)
+          expect(err.message).to.be.eq(`transaction hex cannot be empty`)
+        }
+      })
+
+      it('fails if the hex transaction is empty', async () => {
+        try {
+          await get.aClient.sendRawTx(get.targetPaymail, null, {})
+          assert.fail('should raise error transaction is null')
+        } catch (err) {
+          expect(err.message).to.be.eq(`transaction hex cannot be empty`)
         }
       })
 
       it('sends the right data', async () => {
-        await get.aClient.sendRawTx(get.targetPaymail, [
-          { hex: 'asdasdadsa' }
-        ], {}, null)
+        await get.aClient.sendRawTx(get.targetPaymail, 'asdasdadsa', {})
         const requests = requestsMadeTo(`https://${get.aDomain}:80/api/v1/public-profile/${get.targetPaymail}`)
         expect(JSON.parse(requests[0].body)).to.be.eql(
-          { transactions: [{ hex: 'asdasdadsa' }], metadata: {}, reference: null }
+          { hex: 'asdasdadsa', metadata: {} }
         )
-      })
-
-      it('fails if the list of transactions is empty', async () => {
-        try {
-          await get.aClient.sendRawTx(get.targetPaymail, [], {}, null)
-          assert.fail('should raise error if no transactions are given')
-        } catch (err) {
-          expect(err.message).to.be.eq(`Transaction array should not be empty.`)
-        }
       })
     })
   })
