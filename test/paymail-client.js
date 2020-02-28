@@ -598,14 +598,14 @@ describe('PaymailClient', () => {
           ], {}, null)
           assert.fail('should raise error if capability is not defined')
         } catch (err) {
-          expect(err.message).to.be.eq(`Unknown capability "receive-transactions-alpha-state" for "${get.aDomain}"`)
+          expect(err.message).to.be.eq(`Unknown capability "9cbf9ef2f665" for "${get.aDomain}"`)
         }
       })
     })
 
     describe('when the capability is defined but the api call fails', () => {
       def('apiCapabilities', () => ({
-        'receive-transactions-alpha-state': `https://${get.aDomain}:80/api/v1/public-profile/{alias}@{domain.tld}`
+        '9cbf9ef2f665': `https://${get.aDomain}:80/api/v1/public-profile/{alias}@{domain.tld}`
       }))
 
       beforeEach(() => {
@@ -636,7 +636,7 @@ describe('PaymailClient', () => {
 
     describe('when the capability is defined', () => {
       def('apiCapabilities', () => ({
-        'receive-transactions-alpha-state': `https://${get.aDomain}:80/api/v1/public-profile/{alias}@{domain.tld}`
+        '9cbf9ef2f665': `https://${get.aDomain}:80/api/v1/public-profile/{alias}@{domain.tld}`
       }))
 
       beforeEach(() => {
@@ -685,6 +685,118 @@ describe('PaymailClient', () => {
         const requests = requestsMadeTo(`https://${get.aDomain}:80/api/v1/public-profile/${get.targetPaymail}`)
         expect(JSON.parse(requests[0].body)).to.be.eql(
           { hex: 'asdasdadsa', metadata: {} }
+        )
+      })
+    })
+  })
+
+  describe('#getP2pPaymentDestination', () => {
+    def('aDomain', () => 'example.tld')
+    def('targetPaymail', () => `someone@${get.aDomain}`)
+
+    def('apiCapabilities', () => ({}))
+    beforeEach(() => {
+      get.dns.registerRecord(`_bsvalias._tcp.${get.aDomain}`, {
+        name: get.aDomain,
+        port: '80'
+      })
+      mockResponse(`https://${get.aDomain}:80/.well-known/bsvalias`,
+        {
+          bsvalias: '1.0',
+          capabilities: get.apiCapabilities
+        }
+      )
+    })
+
+    describe('when the capability is not defined', () => {
+      it('raises an error', async () => {
+        try {
+          await get.aClient.getP2pPaymentDestination(get.targetPaymail, 3000)
+          assert.fail('should raise error if capability is not defined')
+        } catch (err) {
+          expect(err.message).to.be.eq(`Unknown capability "e7f75463f39e" for "${get.aDomain}"`)
+        }
+      })
+    })
+
+    describe('when the capability is defined but the api call fails', () => {
+      def('apiCapabilities', () => ({
+        'e7f75463f39e': `https://${get.aDomain}:80/api/v1/p2p-payment-destination/{alias}@{domain.tld}`
+      }))
+
+      beforeEach(() => {
+        get.dns.registerRecord(`_bsvalias._tcp.${get.aDomain}`, {
+          name: get.aDomain,
+          port: '80'
+        })
+        mockResponse(`https://${get.aDomain}:80/api/v1/p2p-payment-destination/${get.targetPaymail}`,
+          {
+            code: 'internal-server-error',
+            message: 'something really bad had just happened'
+          },
+          500
+        )
+      })
+
+      it('raises an error', async () => {
+        try {
+          await get.aClient.getP2pPaymentDestination(get.targetPaymail, 3000)
+          assert.fail('should raise error if capability is not defined')
+        } catch (err) {
+          expect(err.message).to.match(/^Server failed with:/)
+        }
+      })
+    })
+
+    describe('when the capability is defined', () => {
+      def('apiCapabilities', () => ({
+        'e7f75463f39e': `https://${get.aDomain}:80/api/v1/p2p-payment-destination/{alias}@{domain.tld}`
+      }))
+
+      def('outputList', () => [
+        {
+          script: 'somehexscript',
+          satohis: 1000
+        },
+        {
+          script: 'anotherhexscript',
+          satohis: 2000
+        }
+      ])
+
+      beforeEach(() => {
+        mockResponse(`https://${get.aDomain}:80/api/v1/p2p-payment-destination/${get.targetPaymail}`,
+          {
+            outputs: get.outputList
+          }
+        )
+      })
+
+      it('makes the right api call', async () => {
+        await get.aClient.getP2pPaymentDestination(get.targetPaymail, 3000)
+        const requestMade = amountOfRequestFor(`https://${get.aDomain}:80/api/v1/p2p-payment-destination/${get.targetPaymail}`)
+        expect(requestMade).to.be.eql(1)
+      })
+
+      it('returns what is returned by the API', async () => {
+        const response = await get.aClient.getP2pPaymentDestination(get.targetPaymail, 3000)
+        expect(response).to.be.eql(get.outputList)
+      })
+
+      it('fails if satohis is falsey', async () => {
+        try {
+          await get.aClient.getP2pPaymentDestination(get.targetPaymail, null)
+          assert.fail('should raise error transaction is null')
+        } catch (err) {
+          expect(err.message).to.be.eq('Amount in satohis needs to be specified')
+        }
+      })
+
+      it('sends the right data', async () => {
+        await get.aClient.getP2pPaymentDestination(get.targetPaymail, 3000)
+        const requests = requestsMadeTo(`https://${get.aDomain}:80/api/v1/p2p-payment-destination/${get.targetPaymail}`)
+        expect(JSON.parse(requests[0].body)).to.be.eql(
+          { satoshis: 3000 }
         )
       })
     })

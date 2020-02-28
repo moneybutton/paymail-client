@@ -62,6 +62,15 @@ class EndpointResolver {
     return url
   }
 
+  async getP2pPatmentDestinationUrlFor (aPaymail) {
+    const [ alias, domain ] = aPaymail.split('@')
+    await this.ensureCapabilityFor(domain, CapabilityCodes.p2pPaymentDestination)
+    const apiDescriptor = await this.getApiDescriptionFor(domain)
+    const url = apiDescriptor.capabilities[CapabilityCodes.p2pPaymentDestination]
+      .replace('{alias}', alias).replace('{domain.tld}', domain)
+    return url
+  }
+
   async domainHasCapability (aDomain, capability) {
     const apiDescriptor = await this.getApiDescriptionFor(aDomain)
     return !!apiDescriptor.capabilities[capability]

@@ -156,6 +156,28 @@ class PaymailClient {
     }
     return response.json()
   }
+
+  async getP2pPaymentDestination (targetPaymail, satoshis) {
+    if (!satoshis) {
+      throw new Error('Amount in satohis needs to be specified')
+    }
+    let paymentDestinationUrl = await this.resolver.getP2pPatmentDestinationUrlFor(targetPaymail)
+    const response = await this.http.postJson(
+      paymentDestinationUrl,
+      this.requestBodyFactory.buildBodyP2pPaymentDestination(satoshis)
+    )
+    if (!response.ok) {
+      const body = await response.json()
+      throw new Error(`Server failed with: ${JSON.stringify(body)}`)
+    }
+
+    const body = await response.json()
+    if (!body.outputs) {
+      throw new Error('Server answered with a wrong format. Missing outputs')
+    }
+
+    return body.outputs
+  }
 }
 
 export { PaymailClient }
