@@ -6,8 +6,7 @@ class VerifiableMessage {
     }
     this.bsv = bsv
     const concatenated = Buffer.from(parts.join(''))
-    const hashed = this.bsv.crypto.Hash.sha256(concatenated).toString('hex')
-    this.message = new this.bsv.Message(hashed)
+    this.message = new this.bsv.Message(concatenated)
   }
 
   static forBasicAddressResolution ({
