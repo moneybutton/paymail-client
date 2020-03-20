@@ -19,7 +19,7 @@
     "build:watch": "yarn build -w",
     "dev": "yarn build:watch"
   },
-  "repository": "https://github.com/moneybutton/yours",
+  "repository": "https://github.com/moneybutton/paymail-client",
   "author": "Yours Inc.",
   "license": "Open-BSV",
   "publishConfig": {
