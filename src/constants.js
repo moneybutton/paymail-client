@@ -21,11 +21,11 @@ export const CapabilityCodes = {
   receiveTransaction: brfc(
     'Send raw transaction',
     ['Miguel Duarte (Money Button)', 'Ryan X. Charles (Money Button)', 'Ivan Mlinaric (Handcash)', 'Rafa (Handcash)'],
-    '1'
+    '1.1'
   ),
   p2pPaymentDestination: brfc(
     'Get no monitored payment destination (p2p payment destination)',
     ['Miguel Duarte (Money Button)', 'Ryan X. Charles (Money Button)', 'Ivan Mlinaric (Handcash)', 'Rafa (Handcash)'],
-    '1'
+    '1.1'
   )
 }

@@ -141,14 +141,14 @@ class PaymailClient {
     return { avatar, name }
   }
 
-  async sendRawTx (targetPaymail, hexTransaction, metadata = {}) {
+  async sendRawTx (targetPaymail, hexTransaction, reference, metadata = {}) {
     if (!hexTransaction) {
       throw new Error('transaction hex cannot be empty')
     }
     let receiveTxUrl = await this.resolver.getSendTxUrlFor(targetPaymail)
     const response = await this.http.postJson(
       receiveTxUrl,
-      this.requestBodyFactory.buildBodySendTx(hexTransaction, metadata)
+      this.requestBodyFactory.buildBodySendTx(hexTransaction, reference, metadata)
     )
     if (!response.ok) {
       const body = await response.json()
@@ -176,7 +176,7 @@ class PaymailClient {
       throw new Error('Server answered with a wrong format. Missing outputs')
     }
 
-    return body.outputs
+    return body
   }
 }
 

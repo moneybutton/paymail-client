@@ -593,19 +593,17 @@ describe('PaymailClient', () => {
     describe('when the capability is not defined', () => {
       it('raises an error', async () => {
         try {
-          await get.aClient.sendRawTx(get.targetPaymail, [
-            { hex: 'asdasdadsa' }
-          ], {}, null)
+          await get.aClient.sendRawTx(get.targetPaymail, 'hexencodedtx', 'someref', {})
           assert.fail('should raise error if capability is not defined')
         } catch (err) {
-          expect(err.message).to.be.eq(`Unknown capability "9cbf9ef2f665" for "${get.aDomain}"`)
+          expect(err.message).to.be.eq(`Unknown capability "5f1323cddf31" for "${get.aDomain}"`)
         }
       })
     })
 
     describe('when the capability is defined but the api call fails', () => {
       def('apiCapabilities', () => ({
-        '9cbf9ef2f665': `https://${get.aDomain}:80/api/v1/public-profile/{alias}@{domain.tld}`
+        '5f1323cddf31': `https://${get.aDomain}:80/api/v1/public-profile/{alias}@{domain.tld}`
       }))
 
       beforeEach(() => {
@@ -624,9 +622,7 @@ describe('PaymailClient', () => {
 
       it('raises an error', async () => {
         try {
-          await get.aClient.sendRawTx(get.targetPaymail, [
-            { hex: 'asdasdadsa' }
-          ], {}, null)
+          await get.aClient.sendRawTx(get.targetPaymail, 'somehextx', 'someref', {})
           assert.fail('should raise error if capability is not defined')
         } catch (err) {
           expect(err.message).to.match(/^Server failed with:/)
@@ -636,7 +632,7 @@ describe('PaymailClient', () => {
 
     describe('when the capability is defined', () => {
       def('apiCapabilities', () => ({
-        '9cbf9ef2f665': `https://${get.aDomain}:80/api/v1/public-profile/{alias}@{domain.tld}`
+        '5f1323cddf31': `https://${get.aDomain}:80/api/v1/public-profile/{alias}@{domain.tld}`
       }))
 
       beforeEach(() => {
@@ -648,15 +644,13 @@ describe('PaymailClient', () => {
       })
 
       it('makes the right api call', async () => {
-        await get.aClient.sendRawTx(get.targetPaymail, [
-          { hex: 'asdasdadsa' }
-        ], {}, null)
+        await get.aClient.sendRawTx(get.targetPaymail, 'hexencodedtx', 'someref', {})
         const requestMade = amountOfRequestFor(`https://${get.aDomain}:80/api/v1/public-profile/${get.targetPaymail}`)
         expect(requestMade).to.be.eql(1)
       })
 
       it('returns what is returned by the API', async () => {
-        const response = await get.aClient.sendRawTx(get.targetPaymail, 'asdasdadsa', {})
+        const response = await get.aClient.sendRawTx(get.targetPaymail, 'hexencodedtx', 'someref', {})
         expect(response).to.be.eql({
           message: 'ok'
         })
@@ -664,7 +658,7 @@ describe('PaymailClient', () => {
 
       it('fails if the hex transaction is falsey', async () => {
         try {
-          await get.aClient.sendRawTx(get.targetPaymail, null, {})
+          await get.aClient.sendRawTx(get.targetPaymail, null, 'someref', {})
           assert.fail('should raise error transaction is null')
         } catch (err) {
           expect(err.message).to.be.eq(`transaction hex cannot be empty`)
@@ -673,7 +667,7 @@ describe('PaymailClient', () => {
 
       it('fails if the hex transaction is empty', async () => {
         try {
-          await get.aClient.sendRawTx(get.targetPaymail, null, {})
+          await get.aClient.sendRawTx(get.targetPaymail, '', 'someref', {})
           assert.fail('should raise error transaction is null')
         } catch (err) {
           expect(err.message).to.be.eq(`transaction hex cannot be empty`)
@@ -681,10 +675,10 @@ describe('PaymailClient', () => {
       })
 
       it('sends the right data', async () => {
-        await get.aClient.sendRawTx(get.targetPaymail, 'asdasdadsa', {})
+        await get.aClient.sendRawTx(get.targetPaymail, 'hexencodedtx', 'someref', {})
         const requests = requestsMadeTo(`https://${get.aDomain}:80/api/v1/public-profile/${get.targetPaymail}`)
         expect(JSON.parse(requests[0].body)).to.be.eql(
-          { hex: 'asdasdadsa', metadata: {} }
+          { hex: 'hexencodedtx', metadata: {}, reference: 'someref' }
         )
       })
     })
@@ -714,14 +708,14 @@ describe('PaymailClient', () => {
           await get.aClient.getP2pPaymentDestination(get.targetPaymail, 3000)
           assert.fail('should raise error if capability is not defined')
         } catch (err) {
-          expect(err.message).to.be.eq(`Unknown capability "e7f75463f39e" for "${get.aDomain}"`)
+          expect(err.message).to.be.eq(`Unknown capability "2a40af698840" for "${get.aDomain}"`)
         }
       })
     })
 
     describe('when the capability is defined but the api call fails', () => {
       def('apiCapabilities', () => ({
-        'e7f75463f39e': `https://${get.aDomain}:80/api/v1/p2p-payment-destination/{alias}@{domain.tld}`
+        '2a40af698840': `https://${get.aDomain}:80/api/v1/p2p-payment-destination/{alias}@{domain.tld}`
       }))
 
       beforeEach(() => {
@@ -750,7 +744,7 @@ describe('PaymailClient', () => {
 
     describe('when the capability is defined', () => {
       def('apiCapabilities', () => ({
-        'e7f75463f39e': `https://${get.aDomain}:80/api/v1/p2p-payment-destination/{alias}@{domain.tld}`
+        '2a40af698840': `https://${get.aDomain}:80/api/v1/p2p-payment-destination/{alias}@{domain.tld}`
       }))
 
       def('outputList', () => [
@@ -767,7 +761,8 @@ describe('PaymailClient', () => {
       beforeEach(() => {
         mockResponse(`https://${get.aDomain}:80/api/v1/p2p-payment-destination/${get.targetPaymail}`,
           {
-            outputs: get.outputList
+            outputs: get.outputList,
+            reference: 'someref'
           }
         )
       })
@@ -780,7 +775,10 @@ describe('PaymailClient', () => {
 
       it('returns what is returned by the API', async () => {
         const response = await get.aClient.getP2pPaymentDestination(get.targetPaymail, 3000)
-        expect(response).to.be.eql(get.outputList)
+        expect(response).to.be.eql({
+          outputs: get.outputList,
+          reference: 'someref'
+        })
       })
 
       it('fails if satohis is falsey', async () => {

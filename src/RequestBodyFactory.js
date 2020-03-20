@@ -46,8 +46,8 @@ class RequestBodyFactory {
     }
   }
 
-  buildBodySendTx (hexTransaction, metadata) {
-    return { hex: hexTransaction, metadata }
+  buildBodySendTx (hexTransaction, reference, metadata) {
+    return { hex: hexTransaction, metadata, reference }
   }
 
   buildBodyP2pPaymentDestination (satoshis) {
