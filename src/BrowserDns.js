@@ -8,7 +8,7 @@ class BrowserDns {
   async resolveSrv (aDomain, aCallback) {
     try {
       const response = await this.doh.resolveSrv(aDomain)
-      if (response.Status === 0) {
+      if (response.Status === 0 && response.Answer) {
         const data = response.Answer.map(record => {
           const [ priority, weight, port, name ] = record.data.split(' ')
           return {
@@ -20,6 +20,8 @@ class BrowserDns {
           }
         })
         aCallback(null, data)
+      } else if (response.Status === 0 && !response.Answer) {
+        aCallback({ code: 'ENODATA' })
       } else {
         aCallback(new Error('error during dns query'))
       }
