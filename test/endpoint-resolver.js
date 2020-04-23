@@ -103,7 +103,7 @@ describe('EndpointResolver', () => {
           name: get.apiDomain,
           port: '80'
         })
-        mockResponse(`https://${get.apiDomain}.:443/.well-known/bsvalias`,
+        mockResponse(`https://${get.apiDomain}/.well-known/bsvalias`,
           get.apiDescriptor
         )
         mockResponse(`${get.dohUrl}?name=_bsvalias._tcp.${get.aDomain}&type=SRV&cd=0`,
@@ -387,7 +387,7 @@ describe('EndpointResolver', () => {
           name: `${get.apiDomain}.`,
           port: '80'
         })
-        mockResponse(`https://${get.aDomain}.:80/.well-known/bsvalias`,
+        mockResponse(`https://${get.aDomain}:80/.well-known/bsvalias`,
           get.apiDescriptor
         )
       })
@@ -416,10 +416,54 @@ describe('EndpointResolver', () => {
       })
     })
 
+    describe('when the srv record is present, uses dnssec and a non standard port', () => {
+      def('apiDomain', () => 'api.example.tld')
+      def('port', () => '1200')
+      beforeEach(() => {
+        get.dns.registerRecord(`_bsvalias._tcp.${get.aDomain}`, {
+          name: get.apiDomain,
+          port: get.port
+        })
+        mockResponse(`${get.dohUrl}?name=_bsvalias._tcp.${get.aDomain}&type=SRV&cd=0`,
+          {
+            Status: 0,
+            TC: false,
+            RD: true,
+            RA: true,
+            AD: true,
+            CD: false,
+            Question: [
+              {
+                name: `_bsvalias._tcp.${get.aDomain}.`,
+                type: 33
+              }
+            ],
+            Answer: [
+              {
+                name: `_bsvalias._tcp.${get.aDomain}.`,
+                type: 33,
+                TTL: 299,
+                data: `1 10 ${get.port} ${get.apiDomain}.`
+              }
+            ],
+            Comment: 'Response from 205.251.198.76.'
+          }
+        )
+        mockResponse(`https://${get.apiDomain}:${get.port}/.well-known/bsvalias`,
+          get.apiDescriptor
+        )
+      })
+
+      it('returns the api descriptor', async () => {
+        const apiDescriptor = await get.resolver.getApiDescriptionFor(get.aDomain)
+        expect(apiDescriptor).to.be.eql(get.apiDescriptor)
+      })
+    })
+
     describe('when the srv record is not present', () => {
       beforeEach(() => {
         get.dns.registerError(`_bsvalias._tcp.${get.aDomain}`, 'ENOTFOUND')
-        mockResponse(`https://${get.aDomain}:443/.well-known/bsvalias`,
+        mockResponse(`https://${get.aDomain}/.well-known/bsvalias`,
           get.apiDescriptor
         )
       })
@@ -431,7 +475,7 @@ describe('EndpointResolver', () => {
 
       it('queries the right url', async () => {
         await get.resolver.getApiDescriptionFor(get.aDomain)
-        const numberOfRequests = amountOfRequestFor(`https://${get.aDomain}:443/.well-known/bsvalias`)
+        const numberOfRequests = amountOfRequestFor(`https://${get.aDomain}/.well-known/bsvalias`)
         expect(numberOfRequests).to.be.eql(1)
       })
     })
@@ -439,7 +483,7 @@ describe('EndpointResolver', () => {
     describe('when the srv record is not present and the well known file is not present', () => {
       beforeEach(() => {
         get.dns.registerError(`_bsvalias._tcp.${get.aDomain}`, 'ENOTFOUND')
-        mockResponse(`https://${get.aDomain}:443/.well-known/bsvalias`,
+        mockResponse(`https://${get.aDomain}/.well-known/bsvalias`,
           'not found',
           404
         )
@@ -450,7 +494,7 @@ describe('EndpointResolver', () => {
           await get.resolver.getApiDescriptionFor(get.aDomain)
           assert.fail('Should fail')
         } catch (err) {
-          const numberOfRequests = amountOfRequestFor(`https://${get.aDomain}:443/.well-known/bsvalias`)
+          const numberOfRequests = amountOfRequestFor(`https://${get.aDomain}/.well-known/bsvalias`)
           expect(numberOfRequests).to.be.eql(1)
         }
       })
