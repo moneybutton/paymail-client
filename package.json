@@ -17,6 +17,7 @@
     "build:dev": "rollup -c",
     "build:prod": "NODE_ENV=production yarn build",
     "build:watch": "yarn build -w",
+    "prepublish": "npm run build:prod",
     "dev": "yarn build:watch"
   },
   "repository": "https://github.com/moneybutton/paymail-client",
