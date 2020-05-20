@@ -47,12 +47,14 @@ export default [
   },
   ...(PRODUCTION_BUILD ? [{
     input: path.resolve(__dirname, 'src', 'index.js'),
+    external: ['bsv', 'bsv/message'],
     output: [
       {
         file: pkg.unpkg,
         format: 'iife',
         name: pkg.library,
-        sourcemap: true
+        sourcemap: true,
+        globals: { bsv: 'bsv' }
       }
     ],
     context: 'window',
