@@ -1,7 +1,7 @@
 import { brfc } from '@moneybutton/brfc';
 import _defineProperty from '@babel/runtime/helpers/defineProperty';
-import AbortController from 'abort-controller';
 import 'abort-controller/polyfill';
+import AbortController from 'abort-controller';
 import moment from 'moment';
 import fetch from 'isomorphic-fetch';
 

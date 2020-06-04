@@ -6,8 +6,8 @@ function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'defau
 
 var brfc = require('@moneybutton/brfc');
 var _defineProperty = _interopDefault(require('@babel/runtime/helpers/defineProperty'));
-var AbortController = _interopDefault(require('abort-controller'));
 require('abort-controller/polyfill');
+var AbortController = _interopDefault(require('abort-controller'));
 var moment = _interopDefault(require('moment'));
 var fetch = _interopDefault(require('isomorphic-fetch'));
 

@@ -1,5 +1,5 @@
-import AbortController from 'abort-controller'
 import 'abort-controller/polyfill'
+import AbortController from 'abort-controller'
 
 class Http {
   constructor (fetch) {
