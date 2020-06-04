@@ -7,6 +7,7 @@ function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'defau
 var brfc = require('@moneybutton/brfc');
 var _defineProperty = _interopDefault(require('@babel/runtime/helpers/defineProperty'));
 var AbortController = _interopDefault(require('abort-controller'));
+require('abort-controller/polyfill');
 var moment = _interopDefault(require('moment'));
 var fetch = _interopDefault(require('isomorphic-fetch'));
 
@@ -127,7 +128,7 @@ class DnsClient {
   }
 
   domainsAreEqual(domain1, domain2) {
-    return domain1.replace(/\.$/, '') === domain2.replace(/\.$/, '');
+    return domain1.toLowerCase().replace(/\.$/, '') === domain2.toLowerCase().replace(/\.$/, '');
   }
 
 }
