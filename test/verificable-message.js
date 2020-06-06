@@ -13,7 +13,7 @@ describe('VerifiableMessage', () => {
   }))
 
   describe('#forBasicAddressResolution', () => {
-    it('consideres the parameters in the right order', () => {
+    it('considers the parameters in the right order', () => {
       const sign1 = VerifiableMessage.forBasicAddressResolution(get.messageData).sign(get.aPrivateKey)
       const sign2 = new VerifiableMessage([
         get.messageData.senderHandle,
@@ -51,7 +51,7 @@ describe('VerifiableMessage', () => {
       expect(sign1).not.to.be.equals(sign2)
     })
 
-    it('changes the signature if the porpouse change', () => {
+    it('changes the signature if the purpose change', () => {
       const sign1 = VerifiableMessage.forBasicAddressResolution(get.messageData).sign(get.aPrivateKey)
       const sign2 = VerifiableMessage.forBasicAddressResolution({
         ...get.messageData,
@@ -61,7 +61,7 @@ describe('VerifiableMessage', () => {
       expect(sign1).not.to.be.equals(sign2)
     })
 
-    it('changes the signature if the porpouse change', () => {
+    it('changes the signature if the purpose change', () => {
       const sign1 = VerifiableMessage.forBasicAddressResolution(get.messageData).sign(get.aPrivateKey)
       const sign2 = VerifiableMessage.forBasicAddressResolution({
         ...get.messageData,
@@ -94,14 +94,14 @@ describe('VerifiableMessage', () => {
       expect(sign1).to.be.equals(sign2)
     })
 
-    it('considers the same a missing porpuse and an empty string', () => {
+    it('considers the same a missing purpose and an empty string', () => {
       const sign1 = VerifiableMessage.forBasicAddressResolution({
         ...get.messageData,
-        porpuse: undefined
+        purpose: undefined
       }).sign(get.aPrivateKey)
       const sign2 = VerifiableMessage.forBasicAddressResolution({
         ...get.messageData,
-        porpuse: ''
+        purpose: ''
       }).sign(get.aPrivateKey)
 
       expect(sign1).to.be.equals(sign2)

@@ -177,7 +177,7 @@ describe('EndpointResolver', () => {
       })
     })
 
-    describe('when the srv record present it doesn\'t use dnssec but the domain is the same', () => {
+    describe('when the srv record is present, it doesn\'t use dnssec but the domain is the same', () => {
       def('apiDomain', () => get.aDomain)
       beforeEach(() => {
         get.dns.registerRecord(`_bsvalias._tcp.${get.aDomain}`, {
@@ -195,7 +195,7 @@ describe('EndpointResolver', () => {
       })
     })
 
-    describe('when the srv record present it doesn\'t use dnssec but the domain is a www subdomain', () => {
+    describe('when the srv record is present, it doesn\'t use dnssec but the domain is a www subdomain', () => {
       def('apiDomain', () => `www.${get.aDomain}`)
       beforeEach(() => {
         get.dns.registerRecord(`_bsvalias._tcp.${get.aDomain}`, {
@@ -249,7 +249,7 @@ describe('EndpointResolver', () => {
       })
     })
 
-    describe('when the srv record present it doesn\'t use dnssec but the domain is an arbitrary subdomain and doesnt use dnsssec', () => {
+    describe('when the srv record is present, it doesn\'t use dnssec but the domain is an arbitrary subdomain and doesnt use dnsssec', () => {
       def('apiDomain', () => `www2.${get.aDomain}`)
       beforeEach(() => {
         get.dns.registerRecord(`_bsvalias._tcp.${get.aDomain}`, {
@@ -295,7 +295,7 @@ describe('EndpointResolver', () => {
       })
     })
 
-    describe('when the srv record present it doesn\'t use dnssec but its handcash', () => {
+    describe('when the srv record is present, it doesn\'t use dnssec but its handcash', () => {
       def('aDomain', () => 'handcash.io')
       def('apiDomain', () => `handcash-paymail-production.herokuapp.com`)
       beforeEach(() => {
@@ -314,7 +314,7 @@ describe('EndpointResolver', () => {
       })
     })
 
-    describe('when the srv record present it doesn\'t use dnssec but its handcash using its own domain', () => {
+    describe('when the srv record is present, it doesn\'t use dnssec but its handcash using its own domain', () => {
       def('aDomain', () => 'handcash.io')
       def('apiDomain', () => `handcash.io`)
       beforeEach(() => {
@@ -333,7 +333,7 @@ describe('EndpointResolver', () => {
       })
     })
 
-    describe('when the srv record present it doesn\'t use dnssec and its handcash but the url is not actual handcash api url', () => {
+    describe('when the srv record is present, it doesn\'t use dnssec and its handcash but the url is not actual handcash api url', () => {
       def('aDomain', () => 'handcash.io')
       def('apiDomain', () => `fake-url.not-handcash.io`)
       beforeEach(() => {
@@ -380,7 +380,7 @@ describe('EndpointResolver', () => {
       })
     })
 
-    describe('when the srv record present it doesn\'t use dnssec but the domain is the same but differs in a dot', () => {
+    describe('when the srv record is present, it doesn\'t use dnssec but the domain is the same but differs in a dot', () => {
       def('apiDomain', () => get.aDomain)
       beforeEach(() => {
         get.dns.registerRecord(`_bsvalias._tcp.${get.aDomain}`, {
