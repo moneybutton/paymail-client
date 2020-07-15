@@ -10,7 +10,7 @@
     "dist/**"
   ],
   "scripts": {
-    "lint": "standard --parser=babel-eslint",
+    "lint": "standard --parser=babel-eslint --fix",
     "pretest": "yarn lint",
     "test": "mocha",
     "build": "rollup -c",
@@ -39,7 +39,9 @@
     "@babel/core": "7.5.5",
     "@babel/plugin-proposal-object-rest-spread": "7.5.5",
     "@babel/plugin-transform-runtime": "7.5.5",
+    "@babel/polyfill": "^7.10.4",
     "@babel/preset-env": "7.5.5",
+    "@babel/register": "^7.10.5",
     "@rollup/plugin-commonjs": "11.0.1",
     "@rollup/plugin-node-resolve": "7.0.0",
     "@rollup/plugin-replace": "2.3.0",

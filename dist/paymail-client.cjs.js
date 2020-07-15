@@ -434,7 +434,8 @@ class BrowserDns {
           };
         });
         aCallback(null, data);
-      } else if (response.Status === 0 && !response.Answer) {
+      } else if (!response.Answer) {
+        // ignore check response.Status === 0
         aCallback({
           code: 'ENODATA'
         });
