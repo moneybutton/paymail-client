@@ -12,6 +12,7 @@
   "scripts": {
     "lint": "standard --parser=babel-eslint",
     "test": "mocha",
+    "test:ci": "mocha",
     "build": "rollup -c",
     "build:dev": "rollup -c",
     "build:prod": "NODE_ENV=production yarn build",
