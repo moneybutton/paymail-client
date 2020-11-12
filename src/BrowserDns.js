@@ -20,7 +20,7 @@ class BrowserDns {
           }
         })
         aCallback(null, data)
-      } else if (response.Status === 0 && !response.Answer) {
+      } else if (response.Status === 3 || !response.Answer) {
         aCallback({ code: 'ENODATA' })
       } else {
         aCallback(new Error('error during dns query'))
