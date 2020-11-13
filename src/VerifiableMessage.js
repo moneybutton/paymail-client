@@ -2,11 +2,9 @@ class VerifiableMessage {
   constructor (parts, bsv = null) {
     if (bsv === null) {
       bsv = require('bsv')
-      bsv.Message = require('bsv/message')
     }
     this.bsv = bsv
-    const concatenated = Buffer.from(parts.join(''))
-    this.message = new this.bsv.Message(concatenated)
+    this.concatenated = Buffer.from(parts.join(''))
   }
 
   static forBasicAddressResolution ({
@@ -27,12 +25,14 @@ class VerifiableMessage {
     ])
   }
 
-  sign (wifPrivateKey) {
-    return this.message.sign(this.bsv.PrivateKey.fromWIF(wifPrivateKey))
+  sign (wifPrivKey) {
+    let privKey = this.bsv.PrivKey.fromWif(wifPrivKey)
+    let keyPair = this.bsv.KeyPair.fromPrivKey(privKey)
+    return this.bsv.Bsm.sign(this.concatenated, keyPair)
   }
 
   verify (keyAddress, signature) {
-    return this.message.verify(keyAddress, signature)
+    return this.bsv.Bsm.verify(this.concatenated, signature, this.bsv.Address.fromString(keyAddress))
   }
 }
 

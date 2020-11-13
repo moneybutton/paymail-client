@@ -1,4 +1,5 @@
 import { EndpointResolver } from './EndpointResolver'
+import { VerifiableMessage } from './VerifiableMessage'
 import { RequestBodyFactory } from './RequestBodyFactory'
 import { Clock } from './Clock'
 import { PaymailNotFound } from './errors/PaymailNotFound'
@@ -22,6 +23,7 @@ class PaymailClient {
     this.resolver = new EndpointResolver(dns, fetch2)
     this.http = new Http(fetch2)
     this.requestBodyFactory = new RequestBodyFactory(clock !== null ? clock : new Clock())
+    this.VerifiableMessage = VerifiableMessage
   }
 
   /**
@@ -96,11 +98,11 @@ class PaymailClient {
     if (paymail == null && pubkey === null) {
       throw new Error('Must specify either paymail or pubkey')
     }
-    let senderPublicKey
+    let senderPubKey
     if (paymail) {
       if (pubkey && await this.resolver.domainHasCapability(paymail.split('@')[1], CapabilityCodes.verifyPublicKeyOwner)) {
         if (await this.verifyPubkeyOwner(pubkey, paymail)) {
-          senderPublicKey = this.bsv.PublicKey.fromString(pubkey)
+          senderPubKey = this.bsv.PubKey.fromString(pubkey)
         } else {
           return false
         }
@@ -108,18 +110,19 @@ class PaymailClient {
         const hasPki = await this.resolver.domainHasCapability(paymail.split('@')[1], CapabilityCodes.pki)
         if (hasPki) {
           const identityKey = await this.getPublicKey(paymail)
-          senderPublicKey = this.bsv.PublicKey.fromString(identityKey)
+          senderPubKey = this.bsv.PubKey.fromString(identityKey)
         } else {
           return false
         }
       }
     }
 
-    const senderKeyAddress = this.bsv.Address.fromPublicKey(senderPublicKey || pubkey)
+    const senderKeyAddress = this.bsv.Address.fromPubKey(senderPubKey || pubkey)
     try {
       const verified = message.verify(senderKeyAddress.toString(), signature)
       return verified
     } catch (err) {
+      // console.log(err)
       return false
     }
   }
