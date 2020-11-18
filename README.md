@@ -10,7 +10,8 @@ Javascript client to interact with BSV paymail protocol.
 import { PaymailClient, Verifi } from '@moneybutton/paymail-client'
 import fetch from 'isomorphic-fetch'
 import dns from 'dns'
-import bsv from 'bsv'
+import PrivKey from 'bsv/lib/priv-key'
+import PubKey from 'bsv/lib/pub-key'
 
 const client = new PaymailClient(dns, fetch) // Any implementation of fetch can be used.
 const somePaymailAddress = 'some_name@moneybutton.com'
@@ -53,7 +54,7 @@ client.getOutputFor(somePaymailAddress, {
 })
 
 // You can check if a given key belongs to a given paymail
-const somePubKey = bsv.PrivateKey.fromRandom().publicKey.toString()
+const somePubKey = PubKey.fromPrivKey(PrivKey.fromRandom()).toString()
 client.verifyPubkeyOwner(somePubKey, 'someuser@moneybutton.com').then(aBoolean => {
   console.log(`The key ${somePubKey} ${aBoleean ? 'does' : 'doesn\'t'} belongs to someuser@moneybutton.com`)
 })

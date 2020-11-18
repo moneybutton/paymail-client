@@ -84,7 +84,7 @@ describe('PaymailClient', () => {
     })
 
     describe('when private key is provided', () => {
-      def('aPrivateKey', () => 'KxWjJiTRSA7oExnvbWRaCizYB42XMKPxyD6ryzANbdXCJw1fo4sR')
+      def('aPrivKey', () => 'KxWjJiTRSA7oExnvbWRaCizYB42XMKPxyD6ryzANbdXCJw1fo4sR')
       def('senderInfo', () => ({
         senderName: 'Some Guy',
         senderHandle: 'some@guy.org',
@@ -92,14 +92,14 @@ describe('PaymailClient', () => {
       }))
 
       it('uses current datetime and the provided private key to sign', async () => {
-        const body = get.subject.buildBodyToRequestAddress(get.senderInfo, get.aPrivateKey)
+        const body = get.subject.buildBodyToRequestAddress(get.senderInfo, get.aPrivKey)
         expect(body.dt).to.be.eq(get.now)
         expect(body.signature).to.be.eq(new VerifiableMessage([
           get.senderInfo.senderHandle,
           '0',
           get.now.toISOString(),
           get.senderInfo.purpose
-        ]).sign(get.aPrivateKey))
+        ]).sign(get.aPrivKey))
       })
 
       describe('when the signature and datetime are also given', () => {
@@ -112,7 +112,7 @@ describe('PaymailClient', () => {
         }))
 
         it('ignores the provided private key', async () => {
-          const body = get.subject.buildBodyToRequestAddress(get.senderInfo, get.aPrivateKey)
+          const body = get.subject.buildBodyToRequestAddress(get.senderInfo, get.aPrivKey)
           expect(body.dt).to.be.eq(get.aDT)
           expect(body.signature).to.be.eq(get.aSignature)
         })
@@ -121,7 +121,7 @@ describe('PaymailClient', () => {
 
     describe('when an amount is provided', () => {
       def('anAmount', () => 1000)
-      def('aPrivateKey', () => 'KxWjJiTRSA7oExnvbWRaCizYB42XMKPxyD6ryzANbdXCJw1fo4sR')
+      def('aPrivKey', () => 'KxWjJiTRSA7oExnvbWRaCizYB42XMKPxyD6ryzANbdXCJw1fo4sR')
       def('senderInfo', () => ({
         senderName: 'Some Guy',
         senderHandle: 'some@guy.org',
@@ -130,7 +130,7 @@ describe('PaymailClient', () => {
       }))
 
       it('returns the amount in the body', async () => {
-        const body = get.subject.buildBodyToRequestAddress(get.senderInfo, get.aPrivateKey)
+        const body = get.subject.buildBodyToRequestAddress(get.senderInfo, get.aPrivKey)
         expect(body).to.have.keys(
           'senderHandle',
           'senderName',
@@ -148,8 +148,8 @@ describe('PaymailClient', () => {
           ...get.senderInfo,
           amount: get.anAmount + 1
         }
-        const body1 = get.subject.buildBodyToRequestAddress(get.senderInfo, get.aPrivateKey)
-        const body2 = get.subject.buildBodyToRequestAddress(senderInfoWithOtherAmount, get.aPrivateKey)
+        const body1 = get.subject.buildBodyToRequestAddress(get.senderInfo, get.aPrivKey)
+        const body2 = get.subject.buildBodyToRequestAddress(senderInfoWithOtherAmount, get.aPrivKey)
         expect(body1.signature).not.to.be.equals(body2.signature)
       })
     })

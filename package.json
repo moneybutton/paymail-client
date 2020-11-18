@@ -29,11 +29,9 @@
     "@babel/runtime": "7.5.5",
     "@moneybutton/brfc": "^0.38.4",
     "abort-controller": "3.0.0",
+    "bsv": "^2.0.0-beta.42",
     "isomorphic-fetch": "2.2.1",
     "moment": "2.24.0"
-  },
-  "peerDependencies": {
-    "bsv": ">1.0.0"
   },
   "devDependencies": {
     "@babel/cli": "7.5.5",

@@ -7,7 +7,7 @@ import { MockDNS } from './util/MockDNS'
 import { MockClock } from './util/MockClock'
 import { VerifiableMessage } from '../src/VerifiableMessage'
 import moment from 'moment'
-import bsv from 'bsv'
+import * as bsv from 'bsv'
 import { RequestBodyFactory } from '../src/RequestBodyFactory'
 
 describe('PaymailClient', () => {
@@ -98,7 +98,7 @@ describe('PaymailClient', () => {
   describe('#getOutputFor', async () => {
     def('aDomain', () => 'example.tld')
     def('aPaymail', () => `somename@${get.aDomain}`)
-    def('aPrivateKey', () => 'KxWjJiTRSA7oExnvbWRaCizYB42XMKPxyD6ryzANbdXCJw1fo4sR')
+    def('aPrivKey', () => 'KxWjJiTRSA7oExnvbWRaCizYB42XMKPxyD6ryzANbdXCJw1fo4sR')
     def('senderInfo', () => ({
       senderName: 'Some Guy',
       senderHandle: 'some@guy.org',
@@ -129,38 +129,38 @@ describe('PaymailClient', () => {
     })
 
     it('returns an output', async () => {
-      const resultOutput = await get.aClient.getOutputFor(get.aPaymail, get.senderInfo, get.aPrivateKey)
+      const resultOutput = await get.aClient.getOutputFor(get.aPaymail, get.senderInfo, get.aPrivKey)
       expect(resultOutput).to.be.equal('some output')
     })
 
     it('queries the right endpoint', async () => {
-      await get.aClient.getOutputFor(get.aPaymail, get.senderInfo, get.aPrivateKey)
+      await get.aClient.getOutputFor(get.aPaymail, get.senderInfo, get.aPrivKey)
       const amountOfRequests = amountOfRequestFor(`https://${get.aDomain}:80/api/v1/address/${get.aPaymail}`)
       expect(amountOfRequests).to.be.equal(1)
     })
 
     it('makes a post request', async () => {
-      await get.aClient.getOutputFor(get.aPaymail, get.senderInfo, get.aPrivateKey)
+      await get.aClient.getOutputFor(get.aPaymail, get.senderInfo, get.aPrivKey)
       const requestDetails = requestsMadeTo(`https://${get.aDomain}:80/api/v1/address/${get.aPaymail}`)[0]
       expect(requestDetails.method).to.be.equal('POST')
     })
 
     it('sends content type json', async () => {
-      await get.aClient.getOutputFor(get.aPaymail, get.senderInfo, get.aPrivateKey)
+      await get.aClient.getOutputFor(get.aPaymail, get.senderInfo, get.aPrivKey)
       const requestDetails = requestsMadeTo(`https://${get.aDomain}:80/api/v1/address/${get.aPaymail}`)[0]
       expect(requestDetails.headers).to.have.property('Content-Type')
       expect(requestDetails.headers['Content-Type']).to.match(/application\/json/)
     })
 
     it('sends a json with right properties', async () => {
-      await get.aClient.getOutputFor(get.aPaymail, get.senderInfo, get.aPrivateKey)
+      await get.aClient.getOutputFor(get.aPaymail, get.senderInfo, get.aPrivKey)
       const requestDetails = requestsMadeTo(`https://${get.aDomain}:80/api/v1/address/${get.aPaymail}`)[0]
       const body = JSON.parse(requestDetails.body)
       expect(body).to.have.keys('senderHandle', 'senderName', 'purpose', 'dt', 'signature', 'amount')
     })
 
     it('sends sends the info of the sender', async () => {
-      await get.aClient.getOutputFor(get.aPaymail, get.senderInfo, get.aPrivateKey)
+      await get.aClient.getOutputFor(get.aPaymail, get.senderInfo, get.aPrivKey)
       const requestDetails = requestsMadeTo(`https://${get.aDomain}:80/api/v1/address/${get.aPaymail}`)[0]
       const body = JSON.parse(requestDetails.body)
       expect(body.senderHandle).to.be.equal(get.senderInfo.senderHandle)
@@ -169,14 +169,14 @@ describe('PaymailClient', () => {
     })
 
     it('sets amounts to null if not specified', async () => {
-      await get.aClient.getOutputFor(get.aPaymail, get.senderInfo, get.aPrivateKey)
+      await get.aClient.getOutputFor(get.aPaymail, get.senderInfo, get.aPrivKey)
       const requestDetails = requestsMadeTo(`https://${get.aDomain}:80/api/v1/address/${get.aPaymail}`)[0]
       const body = JSON.parse(requestDetails.body)
       expect(body.amount).to.be.null
     })
 
     it('sends a valid signature', async () => {
-      await get.aClient.getOutputFor(get.aPaymail, get.senderInfo, get.aPrivateKey)
+      await get.aClient.getOutputFor(get.aPaymail, get.senderInfo, get.aPrivKey)
       let requestDetails = requestsMadeTo(`https://${get.aDomain}:80/api/v1/address/${get.aPaymail}`)[0]
       let body = JSON.parse(requestDetails.body)
       expect(body.signature).to.be.equal(new VerifiableMessage([
@@ -184,7 +184,7 @@ describe('PaymailClient', () => {
         '0',
         get.now.toISOString(),
         get.senderInfo.purpose
-      ]).sign(get.aPrivateKey))
+      ]).sign(get.aPrivKey))
     })
 
     describe('when the server returns a non ok status', () => {
@@ -193,7 +193,7 @@ describe('PaymailClient', () => {
 
       it('raises an error', async () => {
         try {
-          await get.aClient.getOutputFor(get.aPaymail, get.senderInfo, get.aPrivateKey)
+          await get.aClient.getOutputFor(get.aPaymail, get.senderInfo, get.aPrivKey)
           assert.fail('should fail because the server returns an error')
         } catch (err) {
           expect(err.message).to.be.eql(`Paymail not found: ${get.aPaymail}`)
@@ -224,7 +224,7 @@ describe('PaymailClient', () => {
         def('aSignature', () => undefined)
 
         it('ignores the dt and uses current datetime', async () => {
-          await get.aClient.getOutputFor(get.aPaymail, get.senderInfo, get.aPrivateKey)
+          await get.aClient.getOutputFor(get.aPaymail, get.senderInfo, get.aPrivKey)
           let requestDetails = requestsMadeTo(`https://${get.aDomain}:80/api/v1/address/${get.aPaymail}`)[0]
           let body = JSON.parse(requestDetails.body)
           expect(body.dt).to.be.eq(get.now.toISOString())
@@ -280,10 +280,10 @@ describe('PaymailClient', () => {
   describe('#verifyPubkeyOwner', () => {
     def('aDomain', () => 'example.tld')
     def('aPaymail', () => `somename@${get.aDomain}`)
-    def('aPrivateKey', () => 'KxWjJiTRSA7oExnvbWRaCizYB42XMKPxyD6ryzANbdXCJw1fo4sR')
+    def('aPrivKey', () => 'KxWjJiTRSA7oExnvbWRaCizYB42XMKPxyD6ryzANbdXCJw1fo4sR')
     def('correspondingPublicKey', () => {
-      const privateKey = bsv.PrivateKey.fromWIF(get.aPrivateKey)
-      const publicKey = bsv.PublicKey.fromPrivateKey(privateKey)
+      const privateKey = bsv.PrivKey.fromWif(get.aPrivKey)
+      const publicKey = bsv.PubKey.fromPrivKey(privateKey)
       return publicKey
     })
 
@@ -333,14 +333,14 @@ describe('PaymailClient', () => {
   })
 
   describe('#isValidSignature', () => {
-    def('aPrivateKey', () => 'KxWjJiTRSA7oExnvbWRaCizYB42XMKPxyD6ryzANbdXCJw1fo4sR')
+    def('aPrivKey', () => 'KxWjJiTRSA7oExnvbWRaCizYB42XMKPxyD6ryzANbdXCJw1fo4sR')
     def('correspondingPublicKey', () => {
-      const privateKey = bsv.PrivateKey.fromWIF(get.aPrivateKey)
-      const publicKey = bsv.PublicKey.fromPrivateKey(privateKey)
+      const privateKey = bsv.PrivKey.fromWif(get.aPrivKey)
+      const publicKey = bsv.PubKey.fromPrivKey(privateKey)
       return publicKey
     })
     def('correspondingAddress', () => {
-      return bsv.Address.fromPublicKey(get.correspondingPublicKey)
+      return bsv.Address.fromPubKey(get.correspondingPublicKey)
     })
 
     def('aDomain', () => 'example.tld')
@@ -387,7 +387,7 @@ describe('PaymailClient', () => {
       }))
 
       def('petition', () => {
-        return get.bodyFactory.buildBodyToRequestAddress(get.senderInfo, get.aPrivateKey)
+        return get.bodyFactory.buildBodyToRequestAddress(get.senderInfo, get.aPrivKey)
       })
 
       describe('when the message is valid', () => {
@@ -416,7 +416,7 @@ describe('PaymailClient', () => {
 
       describe('when the signature was created with another key', () => {
         def('petition', () => {
-          return get.bodyFactory.buildBodyToRequestAddress(get.senderInfo, bsv.PrivateKey.fromRandom().toString())
+          return get.bodyFactory.buildBodyToRequestAddress(get.senderInfo, bsv.PrivKey.fromRandom().toString())
         })
 
         it('returns false', async () => {
@@ -440,7 +440,7 @@ describe('PaymailClient', () => {
 
       describe('when the pubkey is not present', async () => {
         def('petition', () => {
-          const { pubkey, ...data } = get.bodyFactory.buildBodyToRequestAddress(get.senderInfo, get.aPrivateKey)
+          const { pubkey, ...data } = get.bodyFactory.buildBodyToRequestAddress(get.senderInfo, get.aPrivKey)
           return data
         })
 
@@ -528,7 +528,7 @@ describe('PaymailClient', () => {
 
       describe('when the petition is valid', () => {
         def('petition', () => {
-          return get.bodyFactory.buildBodyToRequestAddress(get.senderInfo, get.aPrivateKey)
+          return get.bodyFactory.buildBodyToRequestAddress(get.senderInfo, get.aPrivKey)
         })
 
         it('returns true', async () => {
@@ -541,7 +541,7 @@ describe('PaymailClient', () => {
       describe('when the signature is invalid', () => {
         def('petition', () => {
           const petition = {
-            ...get.bodyFactory.buildBodyToRequestAddress(get.senderInfo, get.aPrivateKey),
+            ...get.bodyFactory.buildBodyToRequestAddress(get.senderInfo, get.aPrivKey),
             signature: 'invalid signature'
           }
           return petition
@@ -557,7 +557,7 @@ describe('PaymailClient', () => {
       describe('when the signature is valid but it doesnt match with the content', () => {
         def('petition', () => {
           const petition = {
-            ...get.bodyFactory.buildBodyToRequestAddress(get.senderInfo, get.aPrivateKey),
+            ...get.bodyFactory.buildBodyToRequestAddress(get.senderInfo, get.aPrivKey),
             purpose: 'another purpose that changes the signature'
           }
           return petition
