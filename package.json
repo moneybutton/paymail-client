@@ -20,7 +20,7 @@
     "dev": "yarn build:watch"
   },
   "repository": "https://github.com/moneybutton/paymail-client",
-  "author": "Yours Inc.",
+  "author": "Fermatted Drives Limited",
   "license": "Open-BSV",
   "publishConfig": {
     "access": "public"
