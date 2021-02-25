@@ -27,5 +27,10 @@ export const CapabilityCodes = {
     'Get no monitored payment destination (p2p payment destination)',
     ['Miguel Duarte (Money Button)', 'Ryan X. Charles (Money Button)', 'Ivan Mlinaric (Handcash)', 'Rafa (Handcash)'],
     '1.1'
+  ),
+  assetInformation: brfc(
+    'Asset Information',
+    ['Fabriik'],
+    '1'
   )
 }
