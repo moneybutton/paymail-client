@@ -158,8 +158,8 @@ class PaymailClient {
       this.requestBodyFactory.buildBodySendTx(hexTransaction, reference, metadata)
     )
     if (!response.ok) {
-      const body = await response.json()
-      throw new Error(`Server failed with: ${JSON.stringify(body)}`)
+      const body = await response.text()
+      throw new Error(`Server failed with: ${body}`)
     }
     return response.json()
   }
