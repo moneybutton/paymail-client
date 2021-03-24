@@ -32,5 +32,15 @@ export const CapabilityCodes = {
     'Asset Information',
     ['Fabriik'],
     '1'
+  ),
+  sfpBuildAction: brfc(
+    'Simple Fabriik Protocol for Tokens Build Action',
+    ['Fabriik'],
+    '1'
+  ),
+  sfpAuthoriseAction: brfc(
+    'Simple Fabriik Protocol for Tokens Authorise Action',
+    ['Fabriik'],
+    '1'
   )
 }
