@@ -37,5 +37,15 @@ export const CapabilityCodes = {
     'P2P Payment Destination with Tokens Support',
     ['Fabriik'],
     '1'
+  ),
+  sfpBuildAction: brfc(
+    'Simple Fabriik Protocol for Tokens Build Action',
+    ['Fabriik'],
+    '1'
+  ),
+  sfpAuthoriseAction: brfc(
+    'Simple Fabriik Protocol for Tokens Authorise Action',
+    ['Fabriik'],
+    '1'
   )
 }
