@@ -32,5 +32,10 @@ export const CapabilityCodes = {
     'Asset Information',
     ['Fabriik'],
     '1'
+  ),
+  p2pPaymentDestinationWithTokensSupport: brfc(
+    'P2P Payment Destination with Tokens Support',
+    ['Fabriik'],
+    '1'
   )
 }
