@@ -7,6 +7,9 @@ import { CapabilityCodes } from './constants'
 import fetch from 'isomorphic-fetch'
 import { BrowserDns } from './BrowserDns'
 import { Http } from './http'
+import HttpStatus from 'http-status-codes'
+import { ProtocolNotSupported } from './errors/ProtocolNotSupported'
+import { AssetNotAccepted } from './errors/AssetNotAccepted'
 
 class PaymailClient {
   constructor (dns = null, fetch2 = null, clock = null, bsv = null) {
@@ -169,6 +172,39 @@ class PaymailClient {
       paymentDestinationUrl,
       this.requestBodyFactory.buildBodyP2pPaymentDestination(satoshis)
     )
+    if (!response.ok) {
+      const body = await response.json()
+      throw new Error(`Server failed with: ${JSON.stringify(body)}`)
+    }
+
+    const body = await response.json()
+    if (!body.outputs) {
+      throw new Error('Server answered with a wrong format. Missing outputs')
+    }
+
+    return body
+  }
+
+  async getP2pPaymentDestinationWithTokensSupport (targetPaymail, amount, asset, protocol) {
+    const UNAVAILABLE_FOR_LEGAL_REASONS = 451
+    if (!amount) {
+      throw new Error('Amount needs to be specified')
+    }
+    let paymentDestinationUrl = await this.resolver.getP2pPatmentDestinationWithTokensSupportUrlFor(targetPaymail)
+    const response = await this.http.postJson(
+      paymentDestinationUrl,
+      {
+        amount,
+        asset,
+        protocol
+      }
+    )
+    if (response.status === HttpStatus.NOT_ACCEPTABLE) {
+      throw new ProtocolNotSupported(`Protocol ${protocol} is not supported by paymail ${targetPaymail}`, protocol)
+    }
+    if (response.status === UNAVAILABLE_FOR_LEGAL_REASONS) {
+      throw new AssetNotAccepted(`Paymail ${targetPaymail} cannot accept asset ${asset}`)
+    }
     if (!response.ok) {
       const body = await response.json()
       throw new Error(`Server failed with: ${JSON.stringify(body)}`)
