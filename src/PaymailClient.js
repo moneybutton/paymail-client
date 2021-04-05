@@ -217,6 +217,30 @@ class PaymailClient {
 
     return body
   }
+
+  async sendSfpBuildAction (targetAssetPaymail, params) {
+    let buildActionUrl = await this.resolver.getSfpBuildActionUrlFor(targetAssetPaymail)
+    const response = await this.http.postJson(buildActionUrl, params)
+
+    if (!response.ok) {
+      const body = await response.json()
+      throw new Error(body.message)
+    }
+
+    return response.json()
+  }
+
+  async sendSfpAuthoriseAction (targetAssetPaymail, params) {
+    let authoriseActionUrl = await this.resolver.getSfpAuthoriseActionUrlFor(targetAssetPaymail)
+    const response = await this.http.postJson(authoriseActionUrl, params)
+
+    if (!response.ok) {
+      const body = await response.json()
+      throw new Error(body.message)
+    }
+
+    return response.json()
+  }
 }
 
 export { PaymailClient }
