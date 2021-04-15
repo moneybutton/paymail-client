@@ -62,7 +62,7 @@ class EndpointResolver {
     return url
   }
 
-  async getP2pPatmentDestinationUrlFor (aPaymail) {
+  async getP2pPaymentDestinationUrlFor (aPaymail) {
     const [alias, domain] = aPaymail.split('@')
     await this.ensureCapabilityFor(domain, CapabilityCodes.p2pPaymentDestination)
     const apiDescriptor = await this.getApiDescriptionFor(domain)
@@ -71,7 +71,7 @@ class EndpointResolver {
     return url
   }
 
-  async getP2pPatmentDestinationWithTokensSupportUrlFor (aPaymail) {
+  async getP2pPaymentDestinationWithTokensSupportUrlFor (aPaymail) {
     const [alias, domain] = aPaymail.split('@')
     await this.ensureCapabilityFor(domain, CapabilityCodes.p2pPaymentDestinationWithTokensSupport)
     const apiDescriptor = await this.getApiDescriptionFor(domain)
@@ -93,6 +93,15 @@ class EndpointResolver {
     await this.ensureCapabilityFor(domain, CapabilityCodes.sfpAuthoriseAction)
     const apiDescriptor = await this.getApiDescriptionFor(domain)
     const url = apiDescriptor.capabilities[CapabilityCodes.sfpAuthoriseAction]
+    return url
+  }
+
+  async getAssetInformationUrlFor (aPaymail) {
+    const [alias, domain] = aPaymail.split('@')
+    await this.ensureCapabilityFor(domain, CapabilityCodes.assetInformation)
+    const apiDescriptor = await this.getApiDescriptionFor(domain)
+    const url = apiDescriptor.capabilities[CapabilityCodes.assetInformation]
+      .replace('{alias}', alias).replace('{domain.tld}', domain)
     return url
   }
 
