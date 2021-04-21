@@ -10,6 +10,7 @@ import { Http } from './http'
 import HttpStatus from 'http-status-codes'
 import { ProtocolNotSupported } from './errors/ProtocolNotSupported'
 import { AssetNotAccepted } from './errors/AssetNotAccepted'
+import { AuthoriserNotFound } from './errors/AuthoriserNotFound'
 
 class PaymailClient {
   constructor (dns = null, fetch2 = null, clock = null, bsv = null) {
@@ -219,7 +220,14 @@ class PaymailClient {
   }
 
   async sendSfpBuildAction (targetAssetPaymail, params) {
-    let buildActionUrl = await this.resolver.getSfpBuildActionUrlFor(targetAssetPaymail)
+    let buildActionUrl
+    try {
+      buildActionUrl = await this.resolver.getSfpBuildActionUrlFor(targetAssetPaymail)
+    } catch (err) {
+      if (err.message.includes('Unexpected token')) {
+        throw new AuthoriserNotFound(`Invalid authoriser for ${targetAssetPaymail}`)
+      }
+    }
     const response = await this.http.postJson(buildActionUrl, params)
 
     if (!response.ok) {
