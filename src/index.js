@@ -7,6 +7,7 @@ import { BrowserDns } from './BrowserDns'
 import { CapabilityCodes } from './constants'
 import { AssetNotAccepted } from './errors/AssetNotAccepted'
 import { ProtocolNotSupported } from './errors/ProtocolNotSupported'
+import { AuthoriserNotFound } from './errors/AuthoriserNotFound'
 
 export {
   PaymailClient,
@@ -17,5 +18,6 @@ export {
   BrowserDns,
   CapabilityCodes,
   AssetNotAccepted,
-  ProtocolNotSupported
+  ProtocolNotSupported,
+  AuthoriserNotFound
 }
