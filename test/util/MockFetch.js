@@ -28,6 +28,9 @@ const fetch = async (url, reqInfo = {}) => {
     async json () {
       return data.response
     },
+    async text () {
+      return JSON.stringify(data.response)
+    },
     status: data.status,
     ok: data.status >= 200 && data.status < 300
   }
