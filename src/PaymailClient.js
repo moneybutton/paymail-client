@@ -168,7 +168,7 @@ class PaymailClient {
     if (!satoshis) {
       throw new Error('Amount in satohis needs to be specified')
     }
-    let paymentDestinationUrl = await this.resolver.getP2pPatmentDestinationUrlFor(targetPaymail)
+    let paymentDestinationUrl = await this.resolver.getP2pPaymentDestinationUrlFor(targetPaymail)
     const response = await this.http.postJson(
       paymentDestinationUrl,
       this.requestBodyFactory.buildBodyP2pPaymentDestination(satoshis)
@@ -191,7 +191,7 @@ class PaymailClient {
     if (!amount) {
       throw new Error('Amount needs to be specified')
     }
-    let paymentDestinationUrl = await this.resolver.getP2pPatmentDestinationWithTokensSupportUrlFor(targetPaymail)
+    let paymentDestinationUrl = await this.resolver.getP2pPaymentDestinationWithTokensSupportUrlFor(targetPaymail)
     const response = await this.http.postJson(
       paymentDestinationUrl,
       {
@@ -245,6 +245,21 @@ class PaymailClient {
     if (!response.ok) {
       const body = await response.json()
       throw new Error(body.message)
+    }
+
+    return response.json()
+  }
+
+  async getAssetInformation (assetTargetPaymail) {
+    let assetInformationUrl = await this.resolver.getAssetInformationUrlFor(assetTargetPaymail)
+    const response = await this.http.get(assetInformationUrl)
+
+    if (response.status === HttpStatus.NOT_FOUND) {
+      throw new Error(`Asset ${assetTargetPaymail} was not found`)
+    }
+    if (!response.ok) {
+      const body = await response.text()
+      throw new Error(`Server failed with: ${body}`)
     }
 
     return response.json()
