@@ -1,6 +1,6 @@
 {
   "name": "@moneybutton/paymail-client",
-  "version": "0.38.4",
+  "version": "0.38.6",
   "description": "Money Button isomorphic Paymail utilities.",
   "main": "dist/paymail-client.cjs.js",
   "module": "dist/paymail-client.esm.js",
@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "@babel/runtime": "7.5.5",
-    "@moneybutton/brfc": "^0.38.4",
+    "@moneybutton/brfc": "^0.38.6",
     "abort-controller": "3.0.0",
     "bsv": "2.0.7",
     "http-status-codes": "^2.1.4",
