@@ -20,43 +20,42 @@
     "prepublish": "npm run build:prod",
     "dev": "yarn build:watch"
   },
-  "repository": "https://github.com/moneybutton/paymail-client",
   "author": "Yours Inc.",
   "license": "Open-BSV",
   "publishConfig": {
     "access": "public"
   },
   "dependencies": {
-    "@babel/runtime": "7.5.5",
+    "@babel/runtime": "7.14.0",
     "@moneybutton/brfc": "^0.38.3",
     "abort-controller": "3.0.0",
-    "bsv": "^1.5.0",
-    "isomorphic-fetch": "^2.2.1",
+    "bsv": "^1.5.5",
+    "isomorphic-fetch": "^3.0.0",
     "moment": "^2.24.0"
   },
   "devDependencies": {
-    "@babel/cli": "7.5.5",
-    "@babel/core": "7.5.5",
-    "@babel/plugin-proposal-object-rest-spread": "7.5.5",
-    "@babel/plugin-transform-runtime": "7.5.5",
+    "@babel/cli": "7.14.3",
+    "@babel/core": "7.14.3",
+    "@babel/plugin-proposal-object-rest-spread": "7.14.2",
+    "@babel/plugin-transform-runtime": "7.14.3",
     "@babel/polyfill": "^7.10.4",
-    "@babel/preset-env": "7.5.5",
+    "@babel/preset-env": "7.14.2",
     "@babel/register": "^7.10.5",
-    "@rollup/plugin-commonjs": "11.0.1",
-    "@rollup/plugin-node-resolve": "7.0.0",
-    "@rollup/plugin-replace": "2.3.0",
-    "babel-eslint": "9.0.0",
-    "bdd-lazy-var": "2.5.1",
-    "chai": "4.2.0",
-    "dotenv-cli": "2.0.1",
-    "http-server": "0.11.1",
-    "mocha": "6.2.3",
-    "rollup": "1.29.0",
-    "rollup-plugin-babel": "4.3.3",
+    "@rollup/plugin-commonjs": "19.0.0",
+    "@rollup/plugin-node-resolve": "13.0.0",
+    "@rollup/plugin-replace": "2.4.2",
+    "babel-eslint": "10.1.0",
+    "bdd-lazy-var": "2.6.1",
+    "chai": "4.3.4",
+    "dotenv-cli": "4.0.0",
+    "http-server": "0.12.3",
+    "mocha": "8.4.0",
+    "rollup": "2.48.0",
+    "rollup-plugin-babel": "4.4.0",
     "rollup-plugin-node-builtins": "2.1.2",
     "rollup-plugin-node-globals": "1.4.0",
-    "should": "13.2.1",
-    "standard": "12.0.1"
+    "should": "13.2.3",
+    "standard": "16.0.3"
   },
   "standard": {
     "globals": [
@@ -68,6 +67,5 @@
     "ignore": [
       "docs/"
     ]
-  },
-  "gitHead": "3ac0d2f8bdcd9bbb7b9934b30e92380c6600c95a"
+  }
 }
