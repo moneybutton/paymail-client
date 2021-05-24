@@ -203,6 +203,9 @@ class PaymailClient {
     if (response.status === HttpStatus.NOT_ACCEPTABLE) {
       throw new ProtocolNotSupported(`Protocol ${protocol} is not supported by paymail ${targetPaymail}`, protocol)
     }
+    if (response.status === HttpStatus.NOT_FOUND) {
+      throw new PaymailNotFound(`Paymail ${targetPaymail} not found`, targetPaymail)
+    }
     if (response.status === UNAVAILABLE_FOR_LEGAL_REASONS) {
       throw new AssetNotAccepted(`Paymail ${targetPaymail} cannot accept asset ${asset}`)
     }
