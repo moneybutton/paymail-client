@@ -131,7 +131,7 @@ class PaymailClient {
    * @param {String} s - the preferred size of the image
    */
   async getPublicProfile (paymail) {
-    let publicProfileUrl = await this.resolver.getPublicProfileUrlFor(paymail)
+    const publicProfileUrl = await this.resolver.getPublicProfileUrlFor(paymail)
     const response = await this.http.get(publicProfileUrl)
     if (!response.ok) {
       const body = await response.json()
@@ -145,7 +145,7 @@ class PaymailClient {
     if (!hexTransaction) {
       throw new Error('transaction hex cannot be empty')
     }
-    let receiveTxUrl = await this.resolver.getSendTxUrlFor(targetPaymail)
+    const receiveTxUrl = await this.resolver.getSendTxUrlFor(targetPaymail)
     const response = await this.http.postJson(
       receiveTxUrl,
       this.requestBodyFactory.buildBodySendTx(hexTransaction, reference, metadata)
@@ -161,7 +161,7 @@ class PaymailClient {
     if (!satoshis) {
       throw new Error('Amount in satohis needs to be specified')
     }
-    let paymentDestinationUrl = await this.resolver.getP2pPatmentDestinationUrlFor(targetPaymail)
+    const paymentDestinationUrl = await this.resolver.getP2pPatmentDestinationUrlFor(targetPaymail)
     const response = await this.http.postJson(
       paymentDestinationUrl,
       this.requestBodyFactory.buildBodyP2pPaymentDestination(satoshis)

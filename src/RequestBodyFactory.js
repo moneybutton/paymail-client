@@ -4,6 +4,7 @@ class RequestBodyFactory {
   constructor (clock) {
     this.clock = clock
   }
+
   buildBodyToRequestAddress (senderInfo, privateKey = null) {
     const {
       senderHandle,

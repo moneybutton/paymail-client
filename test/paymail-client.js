@@ -177,8 +177,8 @@ describe('PaymailClient', () => {
 
     it('sends a valid signature', async () => {
       await get.aClient.getOutputFor(get.aPaymail, get.senderInfo, get.aPrivateKey)
-      let requestDetails = requestsMadeTo(`https://${get.aDomain}:80/api/v1/address/${get.aPaymail}`)[0]
-      let body = JSON.parse(requestDetails.body)
+      const requestDetails = requestsMadeTo(`https://${get.aDomain}:80/api/v1/address/${get.aPaymail}`)[0]
+      const body = JSON.parse(requestDetails.body)
       expect(body.signature).to.be.equal(new VerifiableMessage([
         get.senderInfo.senderHandle,
         '0',
@@ -214,8 +214,8 @@ describe('PaymailClient', () => {
 
       it('those dt and signatures are used', async () => {
         await get.aClient.getOutputFor(get.aPaymail, get.senderInfo)
-        let requestDetails = requestsMadeTo(`https://${get.aDomain}:80/api/v1/address/${get.aPaymail}`)[0]
-        let body = JSON.parse(requestDetails.body)
+        const requestDetails = requestsMadeTo(`https://${get.aDomain}:80/api/v1/address/${get.aPaymail}`)[0]
+        const body = JSON.parse(requestDetails.body)
         expect(body.dt).to.be.equal(get.aDT.toISOString())
         expect(body.signature).to.be.equal(get.aSignature)
       })
@@ -225,8 +225,8 @@ describe('PaymailClient', () => {
 
         it('ignores the dt and uses current datetime', async () => {
           await get.aClient.getOutputFor(get.aPaymail, get.senderInfo, get.aPrivateKey)
-          let requestDetails = requestsMadeTo(`https://${get.aDomain}:80/api/v1/address/${get.aPaymail}`)[0]
-          let body = JSON.parse(requestDetails.body)
+          const requestDetails = requestsMadeTo(`https://${get.aDomain}:80/api/v1/address/${get.aPaymail}`)[0]
+          const body = JSON.parse(requestDetails.body)
           expect(body.dt).to.be.eq(get.now.toISOString())
         })
 
@@ -661,7 +661,7 @@ describe('PaymailClient', () => {
           await get.aClient.sendRawTx(get.targetPaymail, null, 'someref', {})
           assert.fail('should raise error transaction is null')
         } catch (err) {
-          expect(err.message).to.be.eq(`transaction hex cannot be empty`)
+          expect(err.message).to.be.eq('transaction hex cannot be empty')
         }
       })
 
@@ -670,7 +670,7 @@ describe('PaymailClient', () => {
           await get.aClient.sendRawTx(get.targetPaymail, '', 'someref', {})
           assert.fail('should raise error transaction is null')
         } catch (err) {
-          expect(err.message).to.be.eq(`transaction hex cannot be empty`)
+          expect(err.message).to.be.eq('transaction hex cannot be empty')
         }
       })
 
