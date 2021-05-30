@@ -737,7 +737,7 @@ describe('PaymailClient', () => {
           await get.aClient.getP2pPaymentDestination(get.targetPaymail, 3000)
           assert.fail('should raise error if capability is not defined')
         } catch (err) {
-          expect(err.message).to.match(/^Server failed with:/)
+          expect(err.message).to.match(/Paymail server for .* returned an invalid response/)
         }
       })
     })

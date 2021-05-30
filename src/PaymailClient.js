@@ -11,6 +11,7 @@ import HttpStatus from 'http-status-codes'
 import { ProtocolNotSupported } from './errors/ProtocolNotSupported'
 import { AssetNotAccepted } from './errors/AssetNotAccepted'
 import { AuthoriserNotFound } from './errors/AuthoriserNotFound'
+import { PaymailServerError } from './errors/PaymailServerError'
 
 class PaymailClient {
   constructor (dns = null, fetch2 = null, clock = null, bsv = null) {
@@ -174,14 +175,16 @@ class PaymailClient {
       paymentDestinationUrl,
       this.requestBodyFactory.buildBodyP2pPaymentDestination(satoshis)
     )
+    if (response.status === HttpStatus.NOT_FOUND) {
+      throw new PaymailNotFound(`Paymail ${targetPaymail} not found`, targetPaymail)
+    }
     if (!response.ok) {
-      const body = await response.json()
-      throw new Error(`Server failed with: ${JSON.stringify(body)}`)
+      throw new PaymailServerError(`Paymail server for ${targetPaymail} returned an invalid response`)
     }
 
     const body = await response.json()
     if (!body.outputs) {
-      throw new Error('Server answered with a wrong format. Missing outputs')
+      throw new PaymailServerError('Server answered with a wrong format. Missing outputs')
     }
 
     return body
@@ -211,13 +214,12 @@ class PaymailClient {
       throw new AssetNotAccepted(`Paymail ${targetPaymail} cannot accept asset ${asset}`)
     }
     if (!response.ok) {
-      const body = await response.json()
-      throw new Error(`Server failed with: ${JSON.stringify(body)}`)
+      throw new PaymailServerError(`Paymail server for ${targetPaymail} returned an invalid response`)
     }
 
     const body = await response.json()
     if (!body.outputs) {
-      throw new Error('Server answered with a wrong format. Missing outputs')
+      throw new PaymailServerError('Server answered with a wrong format. Missing outputs')
     }
 
     return body

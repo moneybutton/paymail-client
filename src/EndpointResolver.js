@@ -1,6 +1,7 @@
 import { CapabilityCodes } from './constants'
 import { DnsClient } from './dns-client'
 import { DnsOverHttps } from './dns-over-https'
+import { PaymailServerError } from './errors/PaymailServerError'
 import { Http } from './http'
 
 class EndpointResolver {
@@ -127,9 +128,19 @@ class EndpointResolver {
     if (!requestDomain) {
       throw new Error(`Invalid domain: ${domain}`)
     }
-    const wellKnown = await this.http.get(`${protocol}://${requestDomain}${requestPort}/.well-known/bsvalias`)
-    const apiDescriptor = await wellKnown.json()
-    return apiDescriptor
+    try {
+      const wellKnown = await this.http.get(`${protocol}://${requestDomain}${requestPort}/.well-known/bsvalias`)
+      const apiDescriptor = await wellKnown.json()
+      return apiDescriptor
+    } catch (err) {
+      if (err.message.includes('invalid json response')) {
+        throw new PaymailServerError(`Paymail server at ${domain} returned an invalid capabilities description`)
+      }
+      if (err.message.includes('getaddrinfo ENOTFOUND')) {
+        throw new PaymailServerError(`Couldn't find domain ${domain}`)
+      }
+      throw err
+    }
   }
 
   async getWellKnownBaseUrl (aDomain) {
