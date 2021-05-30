@@ -59,12 +59,13 @@ class PaymailClient {
    */
   async getOutputFor (aPaymail, senderInfo, privateKey = null) {
     const addressUrl = await this.resolver.getAddressUrlFor(aPaymail)
-    const response = await this.http.postJson(
-      addressUrl,
-      this.requestBodyFactory.buildBodyToRequestAddress(senderInfo, privateKey)
-    )
-    if (!response.ok) {
+    const body = this.requestBodyFactory.buildBodyToRequestAddress(senderInfo, privateKey)
+    const response = await this.http.postJson(addressUrl, body)
+
+    if (response.status === HttpStatus.NOT_FOUND) {
       throw new PaymailNotFound(`Paymail not found: ${aPaymail}`, aPaymail)
+    } else if (!response.ok) {
+      throw new Error(`Server failed with: ${await response.text()}`)
     }
     const { output } = await response.json()
     return output
