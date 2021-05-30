@@ -65,7 +65,7 @@ class PaymailClient {
     if (response.status === HttpStatus.NOT_FOUND) {
       throw new PaymailNotFound(`Paymail not found: ${aPaymail}`, aPaymail)
     } else if (!response.ok) {
-      throw new Error(`Server failed with: ${JSON.stringify(body)}`)
+      throw new Error(`Server failed with: ${await response.text()}`)
     }
     const { output } = await response.json()
     return output
