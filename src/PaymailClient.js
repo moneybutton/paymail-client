@@ -3,7 +3,7 @@ import { RequestBodyFactory } from './RequestBodyFactory'
 import { Clock } from './Clock'
 import { PaymailNotFound } from './errors/PaymailNotFound'
 import { CapabilityCodes } from './constants'
-import fetch from 'isomorphic-fetch'
+import fetch from 'cross-fetch'
 import { BrowserDns } from './BrowserDns'
 import { Http } from './http'
 

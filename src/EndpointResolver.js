@@ -88,7 +88,7 @@ class EndpointResolver {
 
   async fetchApiDescriptor (domain, port) {
     const protocol = (domain === 'localhost' || domain === 'localhost.') ? 'http' : 'https'
-    const requestPort = (port===undefined || port.toString() === '443') ? '' : `:${port}`
+    const requestPort = (port === undefined || port.toString() === '443') ? '' : `:${port}`
     const requestDomain = /^(.*?)\.?$/.exec(domain)[1] // Get value from capture group
     if (!requestDomain) {
       throw new Error(`Invalid domain: ${domain}`)

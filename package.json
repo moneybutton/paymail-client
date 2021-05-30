@@ -11,7 +11,6 @@
   ],
   "scripts": {
     "lint": "standard --parser=babel-eslint --fix",
-    "pretest": "npm run lint",
     "test": "mocha",
     "build": "npx rollup -c",
     "build:dev": "npx rollup -c",
@@ -30,7 +29,7 @@
     "@moneybutton/brfc": "github:baryon/brfc",
     "abort-controller": "3.0.0",
     "bsv": "^1.5.5",
-    "isomorphic-fetch": "^3.0.0",
+    "cross-fetch": "^3.1.4",
     "moment": "^2.24.0"
   },
   "devDependencies": {
