@@ -1,3 +1,4 @@
+import logger from '@moneybutton/logger'
 import { EndpointResolver } from './EndpointResolver'
 import { VerifiableMessage } from './VerifiableMessage'
 import { RequestBodyFactory } from './RequestBodyFactory'
@@ -63,6 +64,8 @@ class PaymailClient {
       this.requestBodyFactory.buildBodyToRequestAddress(senderInfo, privateKey)
     )
     if (!response.ok) {
+      logger.error({ msg: await response.text(), paymailRecipientHandle: aPaymail, ...senderInfo })
+
       throw new PaymailNotFound(`Paymail not found: ${aPaymail}`, aPaymail)
     }
     const { output } = await response.json()
