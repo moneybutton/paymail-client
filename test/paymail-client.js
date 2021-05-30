@@ -196,7 +196,7 @@ describe('PaymailClient', () => {
           await get.aClient.getOutputFor(get.aPaymail, get.senderInfo, get.aPrivKey)
           assert.fail('should fail because the server returns an error')
         } catch (err) {
-          expect(err.message).to.be.eql(`Paymail not found: ${get.aPaymail}`)
+          expect(err.message).to.contain.all.strings('Server failed with:', '\"senderHandle\":\"some@guy.org\"', '\"senderName\":\"Some Guy\"');
         }
       })
     })
