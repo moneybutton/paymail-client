@@ -196,7 +196,7 @@ describe('PaymailClient', () => {
           await get.aClient.getOutputFor(get.aPaymail, get.senderInfo, get.aPrivKey)
           assert.fail('should fail because the server returns an error')
         } catch (err) {
-          expect(err.message).to.be.eql(`Paymail not found: ${get.aPaymail}`)
+          expect(err.message).to.eq(`Server failed with: "${get.serverResponseBody}"`)
         }
       })
     })
@@ -274,7 +274,7 @@ describe('PaymailClient', () => {
       })
     })
 
-    describe.skip('when the server does not validate', () => {})
+    describe.skip('when the server does not validate', () => { })
   })
 
   describe('#verifyPubkeyOwner', () => {
