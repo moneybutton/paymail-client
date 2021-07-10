@@ -11,6 +11,12 @@ import {
 import { MockDNS } from './util/MockDNS'
 import { DnsClient } from '../src/dns-client'
 import { DnsOverHttps } from '../src/dns-over-https'
+import * as md from 'mocha-define'
+
+const get=[]
+function def(name,fn) {
+  get[name] = fn()
+}
 
 describe('EndpointResolver', () => {
   def('dns', () => new MockDNS())

@@ -10,6 +10,11 @@ import moment from 'moment'
 import bsv from 'bsv'
 import { RequestBodyFactory } from '../src/RequestBodyFactory'
 
+const get=[]
+function def(name,fn) {
+  get[name] = fn()
+}
+
 describe('PaymailClient', () => {
   def('dns', () => new MockDNS())
   def('clock', () => new MockClock())

@@ -3,6 +3,11 @@ import { expect } from 'chai'
 import { VerifiableMessage } from '../src/VerifiableMessage'
 import moment from 'moment'
 
+const get=[]
+function def(name,fn) {
+  get[name] = fn()
+}
+
 describe('VerifiableMessage', () => {
   def('aPrivateKey', () => 'KxWjJiTRSA7oExnvbWRaCizYB42XMKPxyD6ryzANbdXCJw1fo4sR')
   def('messageData', () => ({
