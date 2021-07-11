@@ -27,7 +27,7 @@ class EndpointResolver {
   }
 
   async getAddressUrlFor (aPaymail) {
-    const [ alias, domain ] = aPaymail.split('@')
+    const [alias, domain] = aPaymail.split('@')
     await this.ensureCapabilityFor(domain, CapabilityCodes.paymentDestination)
     const apiDescriptor = await this.getApiDescriptionFor(domain)
     const addressUrl = apiDescriptor.capabilities.paymentDestination
@@ -36,7 +36,7 @@ class EndpointResolver {
   }
 
   async getVerifyUrlFor (aPaymail, aPubkey) {
-    const [ alias, domain ] = aPaymail.split('@')
+    const [alias, domain] = aPaymail.split('@')
     await this.ensureCapabilityFor(domain, CapabilityCodes.verifyPublicKeyOwner)
     const apiDescriptor = await this.getApiDescriptionFor(domain)
     const url = apiDescriptor.capabilities[CapabilityCodes.verifyPublicKeyOwner]
@@ -45,7 +45,7 @@ class EndpointResolver {
   }
 
   async getPublicProfileUrlFor (aPaymail) {
-    const [ alias, domain ] = aPaymail.split('@')
+    const [alias, domain] = aPaymail.split('@')
     await this.ensureCapabilityFor(domain, CapabilityCodes.publicProfile)
     const apiDescriptor = await this.getApiDescriptionFor(domain)
     const url = apiDescriptor.capabilities[CapabilityCodes.publicProfile]
@@ -54,7 +54,7 @@ class EndpointResolver {
   }
 
   async getSendTxUrlFor (aPaymail) {
-    const [ alias, domain ] = aPaymail.split('@')
+    const [alias, domain] = aPaymail.split('@')
     await this.ensureCapabilityFor(domain, CapabilityCodes.receiveTransaction)
     const apiDescriptor = await this.getApiDescriptionFor(domain)
     const url = apiDescriptor.capabilities[CapabilityCodes.receiveTransaction]
@@ -63,7 +63,7 @@ class EndpointResolver {
   }
 
   async getP2pPatmentDestinationUrlFor (aPaymail) {
-    const [ alias, domain ] = aPaymail.split('@')
+    const [alias, domain] = aPaymail.split('@')
     await this.ensureCapabilityFor(domain, CapabilityCodes.p2pPaymentDestination)
     const apiDescriptor = await this.getApiDescriptionFor(domain)
     const url = apiDescriptor.capabilities[CapabilityCodes.p2pPaymentDestination]
@@ -88,7 +88,7 @@ class EndpointResolver {
 
   async fetchApiDescriptor (domain, port) {
     const protocol = (domain === 'localhost' || domain === 'localhost.') ? 'http' : 'https'
-    const requestPort = port.toString() === '443' ? '' : `:${port}`
+    const requestPort = (port === undefined || port.toString() === '443') ? '' : `:${port}`
     const requestDomain = /^(.*?)\.?$/.exec(domain)[1] // Get value from capture group
     if (!requestDomain) {
       throw new Error(`Invalid domain: ${domain}`)

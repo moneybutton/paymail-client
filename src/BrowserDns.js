@@ -10,7 +10,7 @@ class BrowserDns {
       const response = await this.doh.resolveSrv(aDomain)
       if (response.Status === 0 && response.Answer) {
         const data = response.Answer.map(record => {
-          const [ priority, weight, port, name ] = record.data.split(' ')
+          const [priority, weight, port, name] = record.data.split(' ')
           return {
             priority,
             weight,
@@ -20,7 +20,8 @@ class BrowserDns {
           }
         })
         aCallback(null, data)
-      } else if (response.Status === 0 && !response.Answer) {
+      } else if (!response.Answer) {
+        // ignore check response.Status === 0
         aCallback({ code: 'ENODATA' })
       } else {
         aCallback(new Error('error during dns query'))

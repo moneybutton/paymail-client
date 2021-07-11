@@ -1,3 +1,4 @@
+import 'abort-controller/polyfill'
 import AbortController from 'abort-controller'
 
 class Http {
@@ -20,7 +21,7 @@ class Http {
   }
 
   async _basicRequest (url, options = {}) {
-    var controller = new AbortController()
+    const controller = new AbortController()
     const timer = setTimeout(() => controller.abort(), 30000)
     return this.fetch(url, {
       ...options,

@@ -1,4 +1,5 @@
 --recursive
 --require @babel/register
 --require @babel/polyfill
+--require mocha-define
 -u bdd-lazy-var/getter

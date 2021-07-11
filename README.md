@@ -44,6 +44,7 @@ const preMadeSignature = VerifiableMessage.forBasicAddressResolution({
 client.getOutputFor(somePaymailAddress, {
   senderHandle: 'sender@moneybutton.com',
   amount: 10000, // Amount in satoshis
+  dt: timestamp,
   senderName: 'Mr. Sender',
   purpose: 'Pay for your services.',
   pubkey: '03aa44757af33e7c9c9ceb1d5655741867ef8efea00bbc3f498424c91a16c85779',

@@ -6,6 +6,11 @@ import { MockClock } from './util/MockClock'
 import { VerifiableMessage } from '../src/VerifiableMessage'
 import moment from 'moment'
 
+const get=[]
+function def(name,fn) {
+  get[name] = fn()
+}
+
 describe('PaymailClient', () => {
   def('clock', () => new MockClock())
   def('now', () => moment('2019-03-01'))

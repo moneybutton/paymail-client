@@ -11,7 +11,7 @@ class MockDNS {
       throw new Error(`Not registered dns query: ${domain}`)
     }
     info.times++
-    callback(info.error, [ info.record ])
+    callback(info.error, [info.record])
   }
 
   // Mock API
