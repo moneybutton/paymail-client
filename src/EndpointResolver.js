@@ -108,7 +108,7 @@ class EndpointResolver {
 
   async domainHasCapability (aDomain, capability) {
     const apiDescriptor = await this.getApiDescriptionFor(aDomain)
-    return !!apiDescriptor.capabilities[capability]
+    return apiDescriptor.capabilities && !!apiDescriptor.capabilities[capability]
   }
 
   async getApiDescriptionFor (aDomain) {
