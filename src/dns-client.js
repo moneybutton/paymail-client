@@ -82,13 +82,13 @@ class DnsClient {
   async validateDnssec (aDomain) {
     const dnsResponse = await this.doh.queryBsvaliasDomain(aDomain)
     if (dnsResponse.Status !== 0 || !dnsResponse.Answer) {
-      throw new PaymailServerError(`Insecure domain.`)
+      throw new PaymailServerError(`${aDomain} is not correctly configured: insecure domain`)
     }
     const data = dnsResponse.Answer[0].data.split(' ')
     const port = data[2]
     const responseDomain = data[3]
     if (!dnsResponse.AD && !this.domainsAreEqual(aDomain, responseDomain)) {
-      throw new PaymailServerError(`Insecure domain.`)
+      throw new PaymailServerError(`${aDomain} is not correctly configured: insecure domain.`)
     }
     return {
       port,
