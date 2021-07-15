@@ -89,7 +89,7 @@ describe('EndpointResolver', () => {
           await get.resolver.getApiDescriptionFor(get.aDomain)
           assert.fail('Should fail')
         } catch (err) {
-          expect(err.message).to.be.eql('Insecure domain.')
+          expect(err.message).to.be.eql('somedomain.tld is not correctly configured: insecure domain')
           const numberOfRequests = amountOfRequestFor(`${get.dohUrl}?name=_bsvalias._tcp.${get.aDomain}&type=SRV&cd=0`)
           expect(numberOfRequests).to.be.eql(1)
         }
@@ -170,7 +170,7 @@ describe('EndpointResolver', () => {
           await get.resolver.getApiDescriptionFor(get.aDomain)
           assert.fail('Should fail')
         } catch (err) {
-          expect(err.message).to.be.eql('Insecure domain.')
+          expect(err.message).to.be.eql('somedomain.tld is not correctly configured: insecure domain')
           const numberOfRequests = amountOfRequestFor(`${get.dohUrl}?name=_bsvalias._tcp.${get.aDomain}&type=SRV&cd=0`)
           expect(numberOfRequests).to.be.eql(1)
         }
@@ -288,7 +288,7 @@ describe('EndpointResolver', () => {
           await get.resolver.getApiDescriptionFor(get.aDomain)
           assert.fail('Should fail')
         } catch (err) {
-          expect(err.message).to.be.eql('Insecure domain.')
+          expect(err.message).to.be.eql('somedomain.tld is not correctly configured: insecure domain')
           const numberOfRequests = amountOfRequestFor(`${get.dohUrl}?name=_bsvalias._tcp.${get.aDomain}&type=SRV&cd=0`)
           expect(numberOfRequests).to.be.eql(1)
         }
@@ -373,7 +373,7 @@ describe('EndpointResolver', () => {
           await get.resolver.getApiDescriptionFor(get.aDomain)
           assert.fail('Should fail')
         } catch (err) {
-          expect(err.message).to.be.eql('Insecure domain.')
+          expect(err.message).to.be.eql('handcash.io is not correctly configured: insecure domain')
           const numberOfRequests = amountOfRequestFor(`${get.dohUrl}?name=_bsvalias._tcp.${get.aDomain}&type=SRV&cd=0`)
           expect(numberOfRequests).to.be.eql(1)
         }
