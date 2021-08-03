@@ -8,7 +8,7 @@ import { BrowserDns } from './BrowserDns'
 import { Http } from './http'
 
 class PaymailClient {
-  constructor (dns = null, fetch2 = null, clock = null, bsv = null) {
+  constructor(dns = null, fetch2 = null, clock = null, bsv = null) {
     if (fetch2 === null) {
       fetch2 = fetch
     }
@@ -25,11 +25,35 @@ class PaymailClient {
   }
 
   /**
+   * Get witness public.
+   *
+   * @param {String} paymail - a paymail address
+   */
+  async witnessPublic(domain) {
+    const apiDescriptor = await this.resolver.getApiDescriptionFor(domain)
+    const url = apiDescriptor.capabilities[CapabilityCodes.witnessPublic]
+    const response = await this.http.get(url)
+    return await response.json()
+  }
+
+  /**
+   * Get witness public.
+   *
+   * @param {String} paymail - a paymail address
+   */
+  async witnessTimestamp(domain) {
+    const apiDescriptor = await this.resolver.getApiDescriptionFor(domain)
+    const url = apiDescriptor.capabilities[CapabilityCodes.witnessTimestamp]
+    const response = await this.http.get(url)
+    return await response.json()
+  }
+
+  /**
    * Uses pki flow to query for an identity key for a given paymail address.
    *
    * @param {String} paymail - a paymail address
    */
-  async getPublicKey (paymail) {
+  async getPublicKey(paymail) {
     const identityUrl = await this.resolver.getIdentityUrlFor(paymail)
     const response = await this.http.get(identityUrl)
     const { pubkey } = await response.json()
@@ -50,7 +74,7 @@ class PaymailClient {
    * @param {String} senderInfo.signature - Optional. Valid signature according to paymail specification.
    * @param {String} privateKey - Optional. private key to sign the request.
    */
-  async getOutputFor (aPaymail, senderInfo, privateKey = null) {
+  async getOutputFor(aPaymail, senderInfo, privateKey = null) {
     const addressUrl = await this.resolver.getAddressUrlFor(aPaymail)
     const response = await this.http.postJson(
       addressUrl,
@@ -70,7 +94,7 @@ class PaymailClient {
    * @param {String} pubkey - Public key to check.
    * @param {String} paymail - a paymail address
    */
-  async verifyPubkeyOwner (pubkey, paymail) {
+  async verifyPubkeyOwner(pubkey, paymail) {
     const url = await this.resolver.getVerifyUrlFor(paymail, pubkey)
     const response = await this.http.get(url)
     const body = await response.json()
@@ -92,7 +116,7 @@ class PaymailClient {
    * @param {String} paymail - Signature owner paymail
    * @param {String} pubkey - Optional. Public key that validates the signature.
    */
-  async isValidSignature (message, signature, paymail = null, pubkey = null) {
+  async isValidSignature(message, signature, paymail = null, pubkey = null) {
     if (paymail == null && pubkey === null) {
       throw new Error('Must specify either paymail or pubkey')
     }
@@ -130,7 +154,7 @@ class PaymailClient {
    * @param {String} paymail - a paymail address
    * @param {String} s - the preferred size of the image
    */
-  async getPublicProfile (paymail) {
+  async getPublicProfile(paymail) {
     const publicProfileUrl = await this.resolver.getPublicProfileUrlFor(paymail)
     const response = await this.http.get(publicProfileUrl)
     if (!response.ok) {
@@ -141,7 +165,7 @@ class PaymailClient {
     return { avatar, name }
   }
 
-  async sendRawTx (targetPaymail, hexTransaction, reference, metadata = {}) {
+  async sendRawTx(targetPaymail, hexTransaction, reference, metadata = {}) {
     if (!hexTransaction) {
       throw new Error('transaction hex cannot be empty')
     }
@@ -157,7 +181,7 @@ class PaymailClient {
     return response.json()
   }
 
-  async getP2pPaymentDestination (targetPaymail, satoshis) {
+  async getP2pPaymentDestination(targetPaymail, satoshis) {
     if (!satoshis) {
       throw new Error('Amount in satohis needs to be specified')
     }

@@ -17,6 +17,8 @@ var moment__default = /*#__PURE__*/_interopDefaultLegacy(moment);
 var fetch__default = /*#__PURE__*/_interopDefaultLegacy(fetch);
 
 const CapabilityCodes = {
+  witnessPublic: 'witnessPublic',
+  witnessTimestamp: 'witnessTimestamp',
   pki: 'pki',
   paymentDestination: 'paymentDestination',
   requestSenderValidation: brfc.brfc('bsvalias Payment Addressing (Payer Validation)', ['andy (nChain)'], ''),
@@ -472,6 +474,32 @@ class PaymailClient {
     this.resolver = new EndpointResolver(dns, fetch2);
     this.http = new Http(fetch2);
     this.requestBodyFactory = new RequestBodyFactory(clock !== null ? clock : new Clock());
+  }
+  /**
+   * Get witness public.
+   *
+   * @param {String} paymail - a paymail address
+   */
+
+
+  async witnessPublic(domain) {
+    const apiDescriptor = await this.resolver.getApiDescriptionFor(domain);
+    const url = apiDescriptor.capabilities[CapabilityCodes.witnessPublic];
+    const response = await this.http.get(url);
+    return await response.json();
+  }
+  /**
+   * Get witness public.
+   *
+   * @param {String} paymail - a paymail address
+   */
+
+
+  async witnessTimestamp(domain) {
+    const apiDescriptor = await this.resolver.getApiDescriptionFor(domain);
+    const url = apiDescriptor.capabilities[CapabilityCodes.witnessTimestamp];
+    const response = await this.http.get(url);
+    return await response.json();
   }
   /**
    * Uses pki flow to query for an identity key for a given paymail address.

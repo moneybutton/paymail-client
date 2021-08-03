@@ -1,6 +1,8 @@
 import { brfc } from '@moneybutton/brfc'
 
 export const CapabilityCodes = {
+  witnessPublic: 'witnessPublic',
+  witnessTimestamp: 'witnessTimestamp',
   pki: 'pki',
   paymentDestination: 'paymentDestination',
   requestSenderValidation: brfc(
