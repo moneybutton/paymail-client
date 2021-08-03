@@ -41,10 +41,10 @@ class PaymailClient {
    *
    * @param {String} domain - a domain
    */
-  async witnessCheckBaton(domain) {
+  async witnessCheckBaton(domain, args) {
     const apiDescriptor = await this.resolver.getApiDescriptionFor(domain)
     const url = apiDescriptor.capabilities[CapabilityCodes.witnessCheckBaton]
-    const response = await this.http.get(url)
+    const response = await this.http.get(`${url}?${new URLSearchParams(args)}`)
     return await response.json()
   }
 
@@ -53,10 +53,10 @@ class PaymailClient {
    *
    * @param {String} domain - a domain
    */
-  async witnessCheckToken(domain) {
+  async witnessCheckToken(domain, args) {
     const apiDescriptor = await this.resolver.getApiDescriptionFor(domain)
     const url = apiDescriptor.capabilities[CapabilityCodes.witnessCheckToken]
-    const response = await this.http.get(url)
+    const response = await this.http.get(`${url}?${new URLSearchParams(args)}`)
     return await response.json()
   }
 

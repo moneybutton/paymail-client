@@ -17,15 +17,16 @@ var moment__default = /*#__PURE__*/_interopDefaultLegacy(moment);
 var fetch__default = /*#__PURE__*/_interopDefaultLegacy(fetch);
 
 const CapabilityCodes = {
-  witnessPublic: 'witnessPublic',
-  witnessTimestamp: 'witnessTimestamp',
   pki: 'pki',
   paymentDestination: 'paymentDestination',
   requestSenderValidation: brfc.brfc('bsvalias Payment Addressing (Payer Validation)', ['andy (nChain)'], ''),
   verifyPublicKeyOwner: brfc.brfc('bsvalias public key verify (Verify Public Key Owner)', [], ''),
   publicProfile: brfc.brfc('Public Profile (Name & Avatar)', ['Ryan X. Charles (Money Button)'], '1'),
   receiveTransaction: brfc.brfc('Send raw transaction', ['Miguel Duarte (Money Button)', 'Ryan X. Charles (Money Button)', 'Ivan Mlinaric (Handcash)', 'Rafa (Handcash)'], '1.1'),
-  p2pPaymentDestination: brfc.brfc('Get no monitored payment destination (p2p payment destination)', ['Miguel Duarte (Money Button)', 'Ryan X. Charles (Money Button)', 'Ivan Mlinaric (Handcash)', 'Rafa (Handcash)'], '1.1')
+  p2pPaymentDestination: brfc.brfc('Get no monitored payment destination (p2p payment destination)', ['Miguel Duarte (Money Button)', 'Ryan X. Charles (Money Button)', 'Ivan Mlinaric (Handcash)', 'Rafa (Handcash)'], '1.1'),
+  witnessPublic: brfc.brfc('Public API of the Controllable UTXO Token Witness', ['LI Long (ChainBow)'], '1'),
+  witnessCheckBaton: brfc.brfc('Check Baton API of the Controllable UTXO Token Witness', ['LI Long (ChainBow)'], '1'),
+  witnessCheckToken: brfc.brfc('Check Token API of the Controllable UTXO Token Witness', ['LI Long (ChainBow)'], '1')
 };
 
 // import { DnsOverHttps } from "./dns-over-https"
@@ -478,7 +479,7 @@ class PaymailClient {
   /**
    * Get witness public.
    *
-   * @param {String} paymail - a paymail address
+   * @param {String} domain - a domain
    */
 
 
@@ -489,16 +490,29 @@ class PaymailClient {
     return await response.json();
   }
   /**
-   * Get witness public.
+   * witness check baton.
    *
-   * @param {String} paymail - a paymail address
+   * @param {String} domain - a domain
    */
 
 
-  async witnessTimestamp(domain) {
+  async witnessCheckBaton(domain, args) {
     const apiDescriptor = await this.resolver.getApiDescriptionFor(domain);
-    const url = apiDescriptor.capabilities[CapabilityCodes.witnessTimestamp];
-    const response = await this.http.get(url);
+    const url = apiDescriptor.capabilities[CapabilityCodes.witnessCheckBaton];
+    const response = await this.http.get(`${url}?${new URLSearchParams(args)}`);
+    return await response.json();
+  }
+  /**
+   * witness check token.
+   *
+   * @param {String} domain - a domain
+   */
+
+
+  async witnessCheckToken(domain, args) {
+    const apiDescriptor = await this.resolver.getApiDescriptionFor(domain);
+    const url = apiDescriptor.capabilities[CapabilityCodes.witnessCheckToken];
+    const response = await this.http.get(`${url}?${new URLSearchParams(args)}`);
     return await response.json();
   }
   /**
