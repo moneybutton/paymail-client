@@ -27,7 +27,7 @@ class PaymailClient {
   /**
    * Get witness public.
    *
-   * @param {String} paymail - a paymail address
+   * @param {String} domain - a domain
    */
   async witnessPublic(domain) {
     const apiDescriptor = await this.resolver.getApiDescriptionFor(domain)
@@ -37,13 +37,25 @@ class PaymailClient {
   }
 
   /**
-   * Get witness public.
+   * witness check baton.
    *
-   * @param {String} paymail - a paymail address
+   * @param {String} domain - a domain
    */
-  async witnessTimestamp(domain) {
+  async witnessCheckBaton(domain) {
     const apiDescriptor = await this.resolver.getApiDescriptionFor(domain)
-    const url = apiDescriptor.capabilities[CapabilityCodes.witnessTimestamp]
+    const url = apiDescriptor.capabilities[CapabilityCodes.witnessCheckBaton]
+    const response = await this.http.get(url)
+    return await response.json()
+  }
+
+  /**
+   * witness check token.
+   *
+   * @param {String} domain - a domain
+   */
+  async witnessCheckToken(domain) {
+    const apiDescriptor = await this.resolver.getApiDescriptionFor(domain)
+    const url = apiDescriptor.capabilities[CapabilityCodes.witnessCheckToken]
     const response = await this.http.get(url)
     return await response.json()
   }

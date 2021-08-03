@@ -1,8 +1,6 @@
 import { brfc } from '@moneybutton/brfc'
 
 export const CapabilityCodes = {
-  witnessPublic: 'witnessPublic',
-  witnessTimestamp: 'witnessTimestamp',
   pki: 'pki',
   paymentDestination: 'paymentDestination',
   requestSenderValidation: brfc(
@@ -29,5 +27,20 @@ export const CapabilityCodes = {
     'Get no monitored payment destination (p2p payment destination)',
     ['Miguel Duarte (Money Button)', 'Ryan X. Charles (Money Button)', 'Ivan Mlinaric (Handcash)', 'Rafa (Handcash)'],
     '1.1'
-  )
+  ),
+  witnessPublic: brfc(
+    'Public API of the Controllable UTXO Token Witness',
+    ['LI Long (ChainBow)'],
+    '1'
+  ),
+  witnessCheckBaton: brfc(
+    'Check Baton API of the Controllable UTXO Token Witness',
+    ['LI Long (ChainBow)'],
+    '1'
+  ),
+  witnessCheckToken: brfc(
+    'Check Token API of the Controllable UTXO Token Witness',
+    ['LI Long (ChainBow)'],
+    '1'
+  ),
 }
