@@ -15,7 +15,9 @@ const CapabilityCodes = {
   p2pPaymentDestination: brfc('Get no monitored payment destination (p2p payment destination)', ['Miguel Duarte (Money Button)', 'Ryan X. Charles (Money Button)', 'Ivan Mlinaric (Handcash)', 'Rafa (Handcash)'], '1.1'),
   witnessPublic: brfc('Public API of the Controllable UTXO Token Witness', ['LI Long (ChainBow)'], '1'),
   witnessCheckBaton: brfc('Check Baton API of the Controllable UTXO Token Witness', ['LI Long (ChainBow)'], '1'),
-  witnessCheckToken: brfc('Check Token API of the Controllable UTXO Token Witness', ['LI Long (ChainBow)'], '1')
+  witnessCheckToken: brfc('Check Token API of the Controllable UTXO Token Witness', ['LI Long (ChainBow)'], '1'),
+  tokenLogo: brfc('Logo URI of the Controllable UTXO Token', ['LI Long (ChainBow)'], '1'),
+  tokenInformation: brfc('Infomation URI of the Controllable UTXO Token', ['LI Long (ChainBow)'], '1')
 };
 
 // import { DnsOverHttps } from "./dns-over-https"
@@ -502,6 +504,36 @@ class PaymailClient {
     const apiDescriptor = await this.resolver.getApiDescriptionFor(domain);
     const url = apiDescriptor.capabilities[CapabilityCodes.witnessCheckToken];
     const response = await this.http.get(`${url}?${new URLSearchParams(args)}`);
+    return await response.json();
+  }
+  /**
+   * Get token's logo uri.
+   *
+   * @param {String} domain - a domain
+   * @param {String} contractId - contractId of Token
+   * return uri string
+   */
+
+
+  async tokenLogo(domain, contractId) {
+    const apiDescriptor = await this.resolver.getApiDescriptionFor(domain);
+    let uri = apiDescriptor.capabilities[CapabilityCodes.tokenLogo];
+    uri = uri.replace('{contractId}', contractId);
+    return uri;
+  }
+  /**
+  * Get token's info json.
+  *
+  * @param {String} domain - a domain
+  * @param {String} contractId - contractId of Token
+  */
+
+
+  async tokenInformation(domain, contractId) {
+    const apiDescriptor = await this.resolver.getApiDescriptionFor(domain);
+    let uri = apiDescriptor.capabilities[CapabilityCodes.tokenInformation];
+    uri = uri.replace('{contractId}', contractId);
+    const response = await this.http.get(uri);
     return await response.json();
   }
   /**
