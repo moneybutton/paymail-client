@@ -43,4 +43,14 @@ export const CapabilityCodes = {
     ['LI Long (ChainBow)'],
     '1'
   ),
+  tokenLogo: brfc(
+    'Logo URI of the Controllable UTXO Token',
+    ['LI Long (ChainBow)'],
+    '1'
+  ),
+  tokenInformation: brfc(
+    'Infomation URI of the Controllable UTXO Token',
+    ['LI Long (ChainBow)'],
+    '1'
+  ),
 }
