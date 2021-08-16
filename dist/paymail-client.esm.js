@@ -519,7 +519,9 @@ class PaymailClient {
     const apiDescriptor = await this.resolver.getApiDescriptionFor(domain);
     let uri = apiDescriptor.capabilities[CapabilityCodes.tokenLogo];
     uri = uri.replace('{contractId}', contractId);
-    return uri;
+    return {
+      uri
+    };
   }
   /**
   * Get token's info json.
