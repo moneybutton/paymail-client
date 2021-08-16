@@ -81,7 +81,7 @@ class EndpointResolver {
       return this._cache[aDomain]
     }
     const { domain, port } = await this.getWellKnownBaseUrl(aDomain)
-    const apiDescriptor = this.fetchApiDescriptor(domain, port)
+    const apiDescriptor = await this.fetchApiDescriptor(domain, port)
     this._cache[aDomain] = apiDescriptor
     return apiDescriptor
   }
