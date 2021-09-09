@@ -3,14 +3,14 @@ import { DnsClient } from './dns-client'
 import { DnsOverHttps } from './dns-over-https'
 import { PaymailServerError } from './errors/PaymailServerError'
 import { Http } from './http'
-import { createCache } from 'simple-in-memory-cache'
+import simpleInMemoryCache from 'simple-in-memory-cache'
 
 class EndpointResolver {
   constructor (dns = null, fetch, defaultCacheTTL = 3600) {
     this.dnsClient = new DnsClient(dns, new DnsOverHttps(fetch, { baseUrl: 'https://dns.google.com/resolve' }))
 
     this.http = new Http(fetch)
-    this.cache = createCache({ defaultSecondsUntilExpiration: defaultCacheTTL })
+    this.cache = simpleInMemoryCache.createCache({ defaultSecondsUntilExpiration: defaultCacheTTL })
   }
 
   static create (dnsClient, fetch) {
