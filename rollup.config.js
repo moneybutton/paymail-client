@@ -75,6 +75,9 @@ export default [
             'info',
             'warn',
             'error'
+          ],
+          '../../node_modules/simple-in-memory-cache/dist/index.js': [
+            'createCache'
           ]
         }
       }),
