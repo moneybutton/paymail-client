@@ -14,6 +14,7 @@ class EndpointResolver {
     this.cache = new PureCache({
       expiryCheckInterval: 10000
     })
+    this.cache.cacheExpirer.timer.unref()
   }
 
   static create (dnsClient, fetch) {

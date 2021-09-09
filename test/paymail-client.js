@@ -20,8 +20,6 @@ describe('PaymailClient', () => {
     get.clock.setCurrentTime(get.now)
   })
 
-  afterEach(() => get.aClient.resolver.cache.dispose())
-
   describe('#getPublicKey', async () => {
     def('aDomain', () => 'example.tld')
     def('aPaymail', () => `somename@${get.aDomain}`)
