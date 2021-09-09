@@ -24,6 +24,8 @@ describe('EndpointResolver', () => {
 
   beforeEach(() => resetFetch())
 
+  afterEach(() => get.resolver.cache.dispose())
+
   describe('#getApiDescriptionFor', () => {
     def('apiDescriptor', () => ({
       bsvalias: '1.0',
