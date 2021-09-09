@@ -233,6 +233,7 @@ class PaymailClient {
       if (err.message.includes('Unexpected token')) {
         throw new AuthoriserNotFound(`Invalid authoriser for ${targetAssetPaymail}`)
       }
+      throw err
     }
     const response = await this.http.postJson(buildActionUrl, params)
 
