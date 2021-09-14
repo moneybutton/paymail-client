@@ -15,17 +15,20 @@ import { PaymailServerError } from './errors/PaymailServerError'
 
 class PaymailClient {
   constructor (dns = null, fetch2 = null, clock = null, bsv = null) {
+    let defaultCacheTTL = 3600
+
     if (fetch2 === null) {
       fetch2 = fetch
     }
     if (dns === null) {
       dns = new BrowserDns(fetch2)
+      defaultCacheTTL = 0
     }
     if (bsv === null) {
       bsv = require('bsv')
     }
     this.bsv = bsv
-    this.resolver = new EndpointResolver(dns, fetch2)
+    this.resolver = new EndpointResolver(dns, fetch2, defaultCacheTTL)
     this.http = new Http(fetch2)
     this.requestBodyFactory = new RequestBodyFactory(clock !== null ? clock : new Clock())
     this.VerifiableMessage = VerifiableMessage

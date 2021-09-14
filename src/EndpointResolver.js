@@ -6,16 +6,18 @@ import { Http } from './http'
 import PureCache from 'pure-cache'
 
 class EndpointResolver {
-  constructor (dns = null, fetch, defaultCacheTTL = 3600) {
+  constructor (dns = null, fetch, defaultCacheTTL = 0) {
     this.dnsClient = new DnsClient(dns, new DnsOverHttps(fetch, { baseUrl: 'https://dns.google.com/resolve' }))
 
     this.http = new Http(fetch)
     this.defaultCacheTTL = defaultCacheTTL
-    this.cache = new PureCache({
-      expiryCheckInterval: 10000
-    })
-    if (this.cache.cacheExpirer.timer.unref) {
-      this.cache.cacheExpirer.timer.unref()
+    if (defaultCacheTTL) {
+      this.cache = new PureCache({
+        expiryCheckInterval: 10000
+      })
+      if (this.cache.cacheExpirer.timer.unref) {
+        this.cache.cacheExpirer.timer.unref()
+      }
     }
   }
 
@@ -119,13 +121,13 @@ class EndpointResolver {
   }
 
   async getApiDescriptionFor (aDomain) {
-    let apiDescriptor = this.cache.get(aDomain)
+    let apiDescriptor = this.cache && this.cache.get(aDomain)
     if (apiDescriptor) {
       return apiDescriptor.value
     }
     const { domain, port } = await this.getWellKnownBaseUrl(aDomain)
     apiDescriptor = await this.fetchApiDescriptor(domain, port)
-    this.cache.put(aDomain, apiDescriptor, this.defaultCacheTTL)
+    this.cache && this.cache.put(aDomain, apiDescriptor, this.defaultCacheTTL)
     return apiDescriptor
   }
 
