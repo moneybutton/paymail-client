@@ -3,13 +3,22 @@ import { DnsClient } from './dns-client'
 import { DnsOverHttps } from './dns-over-https'
 import { PaymailServerError } from './errors/PaymailServerError'
 import { Http } from './http'
+import PureCache from 'pure-cache'
 
 class EndpointResolver {
-  constructor (dns = null, fetch) {
+  constructor (dns = null, fetch, defaultCacheTTL = 0) {
     this.dnsClient = new DnsClient(dns, new DnsOverHttps(fetch, { baseUrl: 'https://dns.google.com/resolve' }))
 
     this.http = new Http(fetch)
-    this._cache = {}
+    this.defaultCacheTTL = defaultCacheTTL
+    if (defaultCacheTTL) {
+      this.cache = new PureCache({
+        expiryCheckInterval: 10000
+      })
+      if (this.cache.cacheExpirer.timer.unref) {
+        this.cache.cacheExpirer.timer.unref()
+      }
+    }
   }
 
   static create (dnsClient, fetch) {
@@ -112,12 +121,13 @@ class EndpointResolver {
   }
 
   async getApiDescriptionFor (aDomain) {
-    if (this._cache[aDomain]) {
-      return this._cache[aDomain]
+    let apiDescriptor = this.cache && this.cache.get(aDomain)
+    if (apiDescriptor) {
+      return apiDescriptor.value
     }
     const { domain, port } = await this.getWellKnownBaseUrl(aDomain)
-    const apiDescriptor = this.fetchApiDescriptor(domain, port)
-    this._cache[aDomain] = apiDescriptor
+    apiDescriptor = await this.fetchApiDescriptor(domain, port)
+    this.cache && this.cache.put(aDomain, apiDescriptor, this.defaultCacheTTL)
     return apiDescriptor
   }
 
