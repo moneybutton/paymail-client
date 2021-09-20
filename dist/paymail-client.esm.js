@@ -20,11 +20,33 @@ const CapabilityCodes = {
   tokenInformation: brfc('Infomation URI of the Controllable UTXO Token', ['LI Long (ChainBow)'], '1')
 };
 
-// import { DnsOverHttps } from "./dns-over-https"
+class DnsOverHttps {
+  constructor(fetch, config) {
+    this.fetch = fetch;
+    this.config = config;
+  }
+
+  async resolveSrv(aDomain) {
+    const response = await this.fetch(`${this.config.baseUrl}?name=${aDomain}&type=SRV&cd=0`);
+    const body = await response.json();
+    return body;
+  }
+
+  async queryBsvaliasDomain(aDomain) {
+    return this.resolveSrv(`_bsvalias._tcp.${aDomain}`);
+  }
+
+}
+
 class DnsClient {
-  constructor(dns, doh) {
+  constructor(dns, fetch) {
     this.dns = dns;
-    this.doh = doh;
+    this.dohAli = new DnsOverHttps(fetch, {
+      baseUrl: 'https://dns.alidns.com/resolve'
+    });
+    this.dohGoogle = new DnsOverHttps(fetch, {
+      baseUrl: 'https://dns.google.com/resolve'
+    });
   }
 
   async checkSrv(aDomain) {
@@ -105,7 +127,7 @@ class DnsClient {
   }
 
   async validateDnssec(aDomain) {
-    const dnsResponse = await this.doh.queryBsvaliasDomain(aDomain);
+    const dnsResponse = await Promise.any([this.dohAli.queryBsvaliasDomain(aDomain), this.dohGoogle.queryBsvaliasDomain(aDomain)]);
 
     if (dnsResponse.Status !== 0 || !dnsResponse.Answer) {
       throw new Error('Insecure domain.');
@@ -128,24 +150,6 @@ class DnsClient {
 
   domainsAreEqual(domain1, domain2) {
     return domain1.toLowerCase().replace(/\.$/, '') === domain2.toLowerCase().replace(/\.$/, '');
-  }
-
-}
-
-class DnsOverHttps {
-  constructor(fetch, config) {
-    this.fetch = fetch;
-    this.config = config;
-  }
-
-  async resolveSrv(aDomain) {
-    const response = await this.fetch(`${this.config.baseUrl}?name=${aDomain}&type=SRV&cd=0`);
-    const body = await response.json();
-    return body;
-  }
-
-  async queryBsvaliasDomain(aDomain) {
-    return this.resolveSrv(`_bsvalias._tcp.${aDomain}`);
   }
 
 }
@@ -189,9 +193,7 @@ class Http {
 
 class EndpointResolver {
   constructor(dns = null, fetch) {
-    this.dnsClient = new DnsClient(dns, new DnsOverHttps(fetch, {
-      baseUrl: 'https://dns.alidns.com/resolve'
-    }));
+    this.dnsClient = new DnsClient(dns, fetch);
     this.http = new Http(fetch);
     this._cache = {};
   }
@@ -313,7 +315,7 @@ class VerifiableMessage {
     dt,
     purpose
   }) {
-    if (dt.toISOString) {
+    if (dt && dt.toISOString) {
       dt = dt.toISOString();
     }
 
@@ -412,14 +414,17 @@ class PaymailNotFound extends Error {
 
 class BrowserDns {
   constructor(fetch) {
-    this.doh = new DnsOverHttps(fetch, {
+    this.dohAli = new DnsOverHttps(fetch, {
       baseUrl: 'https://dns.alidns.com/resolve'
+    });
+    this.dohGoogle = new DnsOverHttps(fetch, {
+      baseUrl: 'https://dns.google.com/resolve'
     });
   }
 
   async resolveSrv(aDomain, aCallback) {
     try {
-      const response = await this.doh.resolveSrv(aDomain);
+      const response = await Promise.any([this.dohAli.resolveSrv(aDomain), this.dohGoogle.resolveSrv(aDomain)]);
 
       if (response.Status === 0 && response.Answer) {
         const data = response.Answer.map(record => {

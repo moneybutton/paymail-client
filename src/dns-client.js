@@ -1,9 +1,9 @@
-// import { DnsOverHttps } from "./dns-over-https"
-
+import { DnsOverHttps } from './dns-over-https'
 class DnsClient {
-  constructor (dns, doh) {
+  constructor (dns, fetch) {
     this.dns = dns
-    this.doh = doh
+    this.dohAli = new DnsOverHttps(fetch, { baseUrl: 'https://dns.alidns.com/resolve' })
+    this.dohGoogle = new DnsOverHttps(fetch, { baseUrl: 'https://dns.google.com/resolve' })
   }
 
   async checkSrv (aDomain) {
@@ -78,7 +78,10 @@ class DnsClient {
   }
 
   async validateDnssec (aDomain) {
-    const dnsResponse = await this.doh.queryBsvaliasDomain(aDomain)
+    const dnsResponse = await Promise.any([
+      this.dohAli.queryBsvaliasDomain(aDomain),
+      this.dohGoogle.queryBsvaliasDomain(aDomain)
+    ]) 
     if (dnsResponse.Status !== 0 || !dnsResponse.Answer) {
       throw new Error('Insecure domain.')
     }

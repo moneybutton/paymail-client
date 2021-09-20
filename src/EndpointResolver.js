@@ -1,11 +1,10 @@
 import { CapabilityCodes } from './constants'
 import { DnsClient } from './dns-client'
-import { DnsOverHttps } from './dns-over-https'
 import { Http } from './http'
 
 class EndpointResolver {
   constructor (dns = null, fetch) {
-    this.dnsClient = new DnsClient(dns, new DnsOverHttps(fetch, { baseUrl: 'https://dns.alidns.com/resolve' }))
+    this.dnsClient = new DnsClient(dns, fetch)
 
     this.http = new Http(fetch)
     this._cache = {}
