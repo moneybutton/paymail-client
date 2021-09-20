@@ -28,12 +28,12 @@
     "@babel/runtime": "7.14.6",
     "@moneybutton/brfc": "github:chainbow/brfc",
     "abort-controller": "3.0.0",
+    "bluebird": "^3.7.2",
     "bsv": "^1.5.5",
-    "cross-fetch": "^3.1.4",
-    "moment": "^2.24.0",
-    "promise.any": "^2.0.2"
+    "cross-fetch": "^3.1.4"
   },
   "devDependencies": {
+    "moment": "^2.24.0",
     "@babel/cli": "7.15.7",
     "@babel/core": "7.15.5",
     "@babel/plugin-proposal-object-rest-spread": "7.15.6",

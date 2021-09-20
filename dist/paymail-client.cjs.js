@@ -3,19 +3,17 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var brfc = require('@moneybutton/brfc');
-var any = require('promise.any');
+var Promise$1 = require('bluebird');
 var _defineProperty = require('@babel/runtime/helpers/defineProperty');
 require('abort-controller/polyfill');
 var AbortController = require('abort-controller');
-var moment = require('moment');
 var fetch = require('cross-fetch');
 
 function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 
-var any__default = /*#__PURE__*/_interopDefaultLegacy(any);
+var Promise__default = /*#__PURE__*/_interopDefaultLegacy(Promise$1);
 var _defineProperty__default = /*#__PURE__*/_interopDefaultLegacy(_defineProperty);
 var AbortController__default = /*#__PURE__*/_interopDefaultLegacy(AbortController);
-var moment__default = /*#__PURE__*/_interopDefaultLegacy(moment);
 var fetch__default = /*#__PURE__*/_interopDefaultLegacy(fetch);
 
 const CapabilityCodes = {
@@ -63,7 +61,7 @@ class DnsClient {
   }
 
   async checkSrv(aDomain) {
-    return new Promise((resolve, reject) => {
+    return new Promise__default['default']((resolve, reject) => {
       this.dns.resolveSrv(`_bsvalias._tcp.${aDomain}`, async (err, result) => {
         try {
           if (err && (err.code === 'ENODATA' || err.code === 'ENOTFOUND')) {
@@ -140,7 +138,8 @@ class DnsClient {
   }
 
   async validateDnssec(aDomain) {
-    const dnsResponse = await any__default['default']([this.dohAli.queryBsvaliasDomain(aDomain), this.dohGoogle.queryBsvaliasDomain(aDomain)]);
+    const dnsResponse = await Promise__default['default'].any([this.dohAli.queryBsvaliasDomain(aDomain), this.dohGoogle.queryBsvaliasDomain(aDomain)]);
+    console.log('dnsResponse', dnsResponse);
 
     if (dnsResponse.Status !== 0 || !dnsResponse.Answer) {
       throw new Error('Insecure domain.');
@@ -412,7 +411,7 @@ class RequestBodyFactory {
 
 class Clock {
   now() {
-    return moment__default['default']();
+    return Date;
   }
 
 }
@@ -437,7 +436,7 @@ class BrowserDns {
 
   async resolveSrv(aDomain, aCallback) {
     try {
-      const response = await any__default['default']([this.dohAli.resolveSrv(aDomain), this.dohGoogle.resolveSrv(aDomain)]);
+      const response = await Promise__default['default'].any([this.dohAli.resolveSrv(aDomain), this.dohGoogle.resolveSrv(aDomain)]);
 
       if (response.Status === 0 && response.Answer) {
         const data = response.Answer.map(record => {

@@ -1,6 +1,5 @@
 import { DnsOverHttps } from './dns-over-https'
-import any from 'promise.any';
-
+import Promise from 'bluebird';
 class DnsClient {
   constructor (dns, fetch) {
     this.dns = dns
@@ -80,7 +79,7 @@ class DnsClient {
   }
 
   async validateDnssec (aDomain) {
-    const dnsResponse = await any([
+    const dnsResponse = await Promise.any([
       this.dohAli.queryBsvaliasDomain(aDomain),
       this.dohGoogle.queryBsvaliasDomain(aDomain)
     ]) 

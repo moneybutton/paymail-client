@@ -1,9 +1,8 @@
 import { brfc } from '@moneybutton/brfc';
-import any from 'promise.any';
+import Promise$1 from 'bluebird';
 import _defineProperty from '@babel/runtime/helpers/defineProperty';
 import 'abort-controller/polyfill';
 import AbortController from 'abort-controller';
-import moment from 'moment';
 import fetch from 'cross-fetch';
 
 const CapabilityCodes = {
@@ -51,7 +50,7 @@ class DnsClient {
   }
 
   async checkSrv(aDomain) {
-    return new Promise((resolve, reject) => {
+    return new Promise$1((resolve, reject) => {
       this.dns.resolveSrv(`_bsvalias._tcp.${aDomain}`, async (err, result) => {
         try {
           if (err && (err.code === 'ENODATA' || err.code === 'ENOTFOUND')) {
@@ -128,7 +127,8 @@ class DnsClient {
   }
 
   async validateDnssec(aDomain) {
-    const dnsResponse = await any([this.dohAli.queryBsvaliasDomain(aDomain), this.dohGoogle.queryBsvaliasDomain(aDomain)]);
+    const dnsResponse = await Promise$1.any([this.dohAli.queryBsvaliasDomain(aDomain), this.dohGoogle.queryBsvaliasDomain(aDomain)]);
+    console.log('dnsResponse', dnsResponse);
 
     if (dnsResponse.Status !== 0 || !dnsResponse.Answer) {
       throw new Error('Insecure domain.');
@@ -400,7 +400,7 @@ class RequestBodyFactory {
 
 class Clock {
   now() {
-    return moment();
+    return Date;
   }
 
 }
@@ -425,7 +425,7 @@ class BrowserDns {
 
   async resolveSrv(aDomain, aCallback) {
     try {
-      const response = await any([this.dohAli.resolveSrv(aDomain), this.dohGoogle.resolveSrv(aDomain)]);
+      const response = await Promise$1.any([this.dohAli.resolveSrv(aDomain), this.dohGoogle.resolveSrv(aDomain)]);
 
       if (response.Status === 0 && response.Answer) {
         const data = response.Answer.map(record => {

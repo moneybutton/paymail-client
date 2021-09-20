@@ -24,7 +24,7 @@ describe('EndpointResolver', () => {
   def('doh', () => new DnsOverHttps(fetch, {
     baseUrl: get.dohUrl
   }))
-  def('dnsClient', () => new DnsClient(get.dns, get.doh))
+  def('dnsClient', () => new DnsClient(get.dns, fetch))
   def('resolver', () => EndpointResolver.create(get.dnsClient, fetch))
   def('aDomain', () => 'somedomain.tld')
 

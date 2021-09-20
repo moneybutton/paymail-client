@@ -1,5 +1,5 @@
 import { DnsOverHttps } from './dns-over-https'
-import any from 'promise.any';
+import Promise from 'bluebird';
 
 class BrowserDns {
   constructor (fetch) {
@@ -9,7 +9,7 @@ class BrowserDns {
 
   async resolveSrv (aDomain, aCallback) {
     try {
-      const response = await any([
+      const response = await Promise.any([
         this.dohAli.resolveSrv(aDomain),
         this.dohGoogle.resolveSrv(aDomain)
       ])
