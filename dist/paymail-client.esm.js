@@ -1,4 +1,5 @@
 import { brfc } from '@moneybutton/brfc';
+import any from 'promise.any';
 import _defineProperty from '@babel/runtime/helpers/defineProperty';
 import 'abort-controller/polyfill';
 import AbortController from 'abort-controller';
@@ -127,7 +128,7 @@ class DnsClient {
   }
 
   async validateDnssec(aDomain) {
-    const dnsResponse = await Promise.any([this.dohAli.queryBsvaliasDomain(aDomain), this.dohGoogle.queryBsvaliasDomain(aDomain)]);
+    const dnsResponse = await any([this.dohAli.queryBsvaliasDomain(aDomain), this.dohGoogle.queryBsvaliasDomain(aDomain)]);
 
     if (dnsResponse.Status !== 0 || !dnsResponse.Answer) {
       throw new Error('Insecure domain.');
@@ -424,7 +425,7 @@ class BrowserDns {
 
   async resolveSrv(aDomain, aCallback) {
     try {
-      const response = await Promise.any([this.dohAli.resolveSrv(aDomain), this.dohGoogle.resolveSrv(aDomain)]);
+      const response = await any([this.dohAli.resolveSrv(aDomain), this.dohGoogle.resolveSrv(aDomain)]);
 
       if (response.Status === 0 && response.Answer) {
         const data = response.Answer.map(record => {

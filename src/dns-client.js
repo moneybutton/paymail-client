@@ -1,4 +1,6 @@
 import { DnsOverHttps } from './dns-over-https'
+import any from 'promise.any';
+
 class DnsClient {
   constructor (dns, fetch) {
     this.dns = dns
@@ -78,7 +80,7 @@ class DnsClient {
   }
 
   async validateDnssec (aDomain) {
-    const dnsResponse = await Promise.any([
+    const dnsResponse = await any([
       this.dohAli.queryBsvaliasDomain(aDomain),
       this.dohGoogle.queryBsvaliasDomain(aDomain)
     ]) 
