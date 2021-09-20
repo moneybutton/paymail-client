@@ -7,6 +7,7 @@ var Promise$1 = require('bluebird');
 var _defineProperty = require('@babel/runtime/helpers/defineProperty');
 require('abort-controller/polyfill');
 var AbortController = require('abort-controller');
+var moment = require('moment');
 var fetch = require('cross-fetch');
 
 function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
@@ -14,6 +15,7 @@ function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'defau
 var Promise__default = /*#__PURE__*/_interopDefaultLegacy(Promise$1);
 var _defineProperty__default = /*#__PURE__*/_interopDefaultLegacy(_defineProperty);
 var AbortController__default = /*#__PURE__*/_interopDefaultLegacy(AbortController);
+var moment__default = /*#__PURE__*/_interopDefaultLegacy(moment);
 var fetch__default = /*#__PURE__*/_interopDefaultLegacy(fetch);
 
 const CapabilityCodes = {
@@ -139,7 +141,6 @@ class DnsClient {
 
   async validateDnssec(aDomain) {
     const dnsResponse = await Promise__default['default'].any([this.dohAli.queryBsvaliasDomain(aDomain), this.dohGoogle.queryBsvaliasDomain(aDomain)]);
-    console.log('dnsResponse', dnsResponse);
 
     if (dnsResponse.Status !== 0 || !dnsResponse.Answer) {
       throw new Error('Insecure domain.');
@@ -411,7 +412,7 @@ class RequestBodyFactory {
 
 class Clock {
   now() {
-    return Date;
+    return moment__default['default']();
   }
 
 }

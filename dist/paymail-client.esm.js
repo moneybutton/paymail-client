@@ -3,6 +3,7 @@ import Promise$1 from 'bluebird';
 import _defineProperty from '@babel/runtime/helpers/defineProperty';
 import 'abort-controller/polyfill';
 import AbortController from 'abort-controller';
+import moment from 'moment';
 import fetch from 'cross-fetch';
 
 const CapabilityCodes = {
@@ -128,7 +129,6 @@ class DnsClient {
 
   async validateDnssec(aDomain) {
     const dnsResponse = await Promise$1.any([this.dohAli.queryBsvaliasDomain(aDomain), this.dohGoogle.queryBsvaliasDomain(aDomain)]);
-    console.log('dnsResponse', dnsResponse);
 
     if (dnsResponse.Status !== 0 || !dnsResponse.Answer) {
       throw new Error('Insecure domain.');
@@ -400,7 +400,7 @@ class RequestBodyFactory {
 
 class Clock {
   now() {
-    return Date;
+    return moment();
   }
 
 }

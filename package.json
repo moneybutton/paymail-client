@@ -25,21 +25,21 @@
     "access": "public"
   },
   "dependencies": {
-    "@babel/runtime": "7.14.6",
+    "@babel/runtime": "7.15.4",
     "@moneybutton/brfc": "github:chainbow/brfc",
     "abort-controller": "3.0.0",
     "bluebird": "^3.7.2",
     "bsv": "^1.5.5",
+    "moment": "^2.24.0",
     "cross-fetch": "^3.1.4"
   },
   "devDependencies": {
-    "moment": "^2.24.0",
     "@babel/cli": "7.15.7",
     "@babel/core": "7.15.5",
     "@babel/plugin-proposal-object-rest-spread": "7.15.6",
     "@babel/plugin-transform-runtime": "7.15.0",
     "@babel/polyfill": "^7.10.4",
-    "@babel/preset-env": "7.15.0",
+    "@babel/preset-env": "7.15.6",
     "@babel/register": "^7.10.5",
     "@rollup/plugin-commonjs": "20.0.0",
     "@rollup/plugin-node-resolve": "13.0.4",
@@ -49,7 +49,7 @@
     "chai": "4.3.4",
     "dotenv-cli": "4.0.0",
     "http-server": "13.0.2",
-    "mocha": "9.0.2",
+    "mocha": "9.1.1",
     "mocha-define": "^0.2.0",
     "rollup": "2.56.3",
     "rollup-plugin-babel": "4.4.0",
