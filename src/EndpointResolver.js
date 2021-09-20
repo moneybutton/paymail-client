@@ -5,7 +5,7 @@ import { Http } from './http'
 
 class EndpointResolver {
   constructor (dns = null, fetch) {
-    this.dnsClient = new DnsClient(dns, new DnsOverHttps(fetch, { baseUrl: 'https://dns.google.com/resolve' }))
+    this.dnsClient = new DnsClient(dns, new DnsOverHttps(fetch, { baseUrl: 'https://dns.alidns.com/resolve' }))
 
     this.http = new Http(fetch)
     this._cache = {}

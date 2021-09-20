@@ -190,7 +190,7 @@ class Http {
 class EndpointResolver {
   constructor(dns = null, fetch) {
     this.dnsClient = new DnsClient(dns, new DnsOverHttps(fetch, {
-      baseUrl: 'https://dns.google.com/resolve'
+      baseUrl: 'https://dns.alidns.com/resolve'
     }));
     this.http = new Http(fetch);
     this._cache = {};
@@ -413,7 +413,7 @@ class PaymailNotFound extends Error {
 class BrowserDns {
   constructor(fetch) {
     this.doh = new DnsOverHttps(fetch, {
-      baseUrl: 'https://dns.google.com/resolve'
+      baseUrl: 'https://dns.alidns.com/resolve'
     });
   }
 

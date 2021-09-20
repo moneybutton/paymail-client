@@ -2,7 +2,7 @@ import { DnsOverHttps } from './dns-over-https'
 
 class BrowserDns {
   constructor (fetch) {
-    this.doh = new DnsOverHttps(fetch, { baseUrl: 'https://dns.google.com/resolve' })
+    this.doh = new DnsOverHttps(fetch, { baseUrl: 'https://dns.alidns.com/resolve' })
   }
 
   async resolveSrv (aDomain, aCallback) {
