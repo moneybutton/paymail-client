@@ -15,7 +15,7 @@ import { PaymailServerError } from './errors/PaymailServerError'
 
 class PaymailClient {
   constructor (dns = null, fetch2 = null, clock = null, bsv = null) {
-    let defaultCacheTTL = 3600
+    let defaultCacheTTL = 3600 * 1000
 
     if (fetch2 === null) {
       fetch2 = fetch
