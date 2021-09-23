@@ -143,7 +143,7 @@ class EndpointResolver {
       const apiDescriptor = await wellKnown.json()
       return apiDescriptor
     } catch (err) {
-      if (err.message.includes('invalid json response')) {
+      if (err.message.includes('invalid json response') || err.message.includes('Unexpected token')) {
         throw new PaymailServerError(`Paymail server at ${domain} returned an invalid capabilities description`)
       }
       if (err.message.includes('getaddrinfo ENOTFOUND')) {
