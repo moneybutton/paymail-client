@@ -149,6 +149,9 @@ class EndpointResolver {
       if (err.message.includes('getaddrinfo ENOTFOUND')) {
         throw new PaymailServerError(`Couldn't find domain ${domain}`)
       }
+      if (err.message.includes('failed')) {
+        throw new PaymailServerError(`Couldn't connect to domain ${domain}`)
+      }
       throw err
     }
   }
