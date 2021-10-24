@@ -61,6 +61,30 @@ class PaymailClient {
   }
 
   /**
+ * witness check sale contract.
+ *
+ * @param {String} domain - a domain
+ */
+  async witnessCheckSale ( domain, args ) {
+    const apiDescriptor = await this.resolver.getApiDescriptionFor( domain )
+    const url = apiDescriptor.capabilities[ CapabilityCodes.witnessCheckSale ]
+    const response = await this.http.get( `${url}?${new URLSearchParams( args )}` )
+    return await response.json()
+  }
+
+  /**
+* witness check buy contract.
+*
+* @param {String} domain - a domain
+*/
+  async witnessCheckBuy ( domain, args ) {
+    const apiDescriptor = await this.resolver.getApiDescriptionFor( domain )
+    const url = apiDescriptor.capabilities[ CapabilityCodes.witnessCheckBuy ]
+    const response = await this.http.get( `${url}?${new URLSearchParams( args )}` )
+    return await response.json()
+  }
+
+  /**
    * Get token's logo uri.
    *
    * @param {String} domain - a domain
@@ -71,7 +95,7 @@ class PaymailClient {
     const apiDescriptor = await this.resolver.getApiDescriptionFor( domain )
     let uri = apiDescriptor.capabilities[ CapabilityCodes.tokenLogo ]
     uri = uri.replace( '{contractId}', contractId )
-    return {uri}
+    return { uri }
   }
 
   /**
