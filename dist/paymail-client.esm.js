@@ -17,6 +17,10 @@ const CapabilityCodes = {
   witnessPublic: brfc('Public API of the Controllable UTXO Token Witness', ['LI Long (ChainBow)'], '1'),
   witnessCheckBaton: brfc('Check Baton API of the Controllable UTXO Token Witness', ['LI Long (ChainBow)'], '1'),
   witnessCheckToken: brfc('Check Token API of the Controllable UTXO Token Witness', ['LI Long (ChainBow)'], '1'),
+  witnessCheckSale: brfc('Check Sale API of the Controllable UTXO Token Witness', ['LI Long (ChainBow)'], '1'),
+  //expect: 'c89beec44e80',
+  witnessCheckBuy: brfc('Check Buy API of the Controllable UTXO Token Witness', ['LI Long (ChainBow)'], '1'),
+  //expect: '598b080631c4',
   tokenLogo: brfc('Logo URI of the Controllable UTXO Token', ['LI Long (ChainBow)'], '1'),
   tokenInformation: brfc('Infomation URI of the Controllable UTXO Token', ['LI Long (ChainBow)'], '1')
 };
@@ -509,6 +513,32 @@ class PaymailClient {
   async witnessCheckToken(domain, args) {
     const apiDescriptor = await this.resolver.getApiDescriptionFor(domain);
     const url = apiDescriptor.capabilities[CapabilityCodes.witnessCheckToken];
+    const response = await this.http.get(`${url}?${new URLSearchParams(args)}`);
+    return await response.json();
+  }
+  /**
+  * witness check sale contract.
+  *
+  * @param {String} domain - a domain
+  */
+
+
+  async witnessCheckSale(domain, args) {
+    const apiDescriptor = await this.resolver.getApiDescriptionFor(domain);
+    const url = apiDescriptor.capabilities[CapabilityCodes.witnessCheckSale];
+    const response = await this.http.get(`${url}?${new URLSearchParams(args)}`);
+    return await response.json();
+  }
+  /**
+  * witness check buy contract.
+  *
+  * @param {String} domain - a domain
+  */
+
+
+  async witnessCheckBuy(domain, args) {
+    const apiDescriptor = await this.resolver.getApiDescriptionFor(domain);
+    const url = apiDescriptor.capabilities[CapabilityCodes.witnessCheckBuy];
     const response = await this.http.get(`${url}?${new URLSearchParams(args)}`);
     return await response.json();
   }
