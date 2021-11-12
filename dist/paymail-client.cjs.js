@@ -2,39 +2,43 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-var brfc = require('@moneybutton/brfc');
 var Promise$1 = require('bluebird');
 var _defineProperty = require('@babel/runtime/helpers/defineProperty');
-require('abort-controller/polyfill');
-var AbortController = require('abort-controller');
-var moment = require('moment');
 var fetch = require('cross-fetch');
 
 function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 
 var Promise__default = /*#__PURE__*/_interopDefaultLegacy(Promise$1);
 var _defineProperty__default = /*#__PURE__*/_interopDefaultLegacy(_defineProperty);
-var AbortController__default = /*#__PURE__*/_interopDefaultLegacy(AbortController);
-var moment__default = /*#__PURE__*/_interopDefaultLegacy(moment);
 var fetch__default = /*#__PURE__*/_interopDefaultLegacy(fetch);
+
+const bsv = require('bsv');
+
+const brfc = (title, authors, version) => {
+  const autorString = authors.join(', ').trim();
+  const stringToHash = [title.trim() + autorString + (version.toString() || '')].join('').trim();
+  let hash = bsv.crypto.Hash.sha256sha256(Buffer.from(stringToHash));
+  hash = hash.reverse();
+  return hash.toString('hex').substring(0, 12);
+};
 
 const CapabilityCodes = {
   pki: 'pki',
   paymentDestination: 'paymentDestination',
-  requestSenderValidation: brfc.brfc('bsvalias Payment Addressing (Payer Validation)', ['andy (nChain)'], ''),
-  verifyPublicKeyOwner: brfc.brfc('bsvalias public key verify (Verify Public Key Owner)', [], ''),
-  publicProfile: brfc.brfc('Public Profile (Name & Avatar)', ['Ryan X. Charles (Money Button)'], '1'),
-  receiveTransaction: brfc.brfc('Send raw transaction', ['Miguel Duarte (Money Button)', 'Ryan X. Charles (Money Button)', 'Ivan Mlinaric (Handcash)', 'Rafa (Handcash)'], '1.1'),
-  p2pPaymentDestination: brfc.brfc('Get no monitored payment destination (p2p payment destination)', ['Miguel Duarte (Money Button)', 'Ryan X. Charles (Money Button)', 'Ivan Mlinaric (Handcash)', 'Rafa (Handcash)'], '1.1'),
-  witnessPublic: brfc.brfc('Public API of the Controllable UTXO Token Witness', ['LI Long (ChainBow)'], '1'),
-  witnessCheckBaton: brfc.brfc('Check Baton API of the Controllable UTXO Token Witness', ['LI Long (ChainBow)'], '1'),
-  witnessCheckToken: brfc.brfc('Check Token API of the Controllable UTXO Token Witness', ['LI Long (ChainBow)'], '1'),
-  witnessCheckSale: brfc.brfc('Check Sale API of the Controllable UTXO Token Witness', ['LI Long (ChainBow)'], '1'),
+  requestSenderValidation: brfc('bsvalias Payment Addressing (Payer Validation)', ['andy (nChain)'], ''),
+  verifyPublicKeyOwner: brfc('bsvalias public key verify (Verify Public Key Owner)', [], ''),
+  publicProfile: brfc('Public Profile (Name & Avatar)', ['Ryan X. Charles (Money Button)'], '1'),
+  receiveTransaction: brfc('Send raw transaction', ['Miguel Duarte (Money Button)', 'Ryan X. Charles (Money Button)', 'Ivan Mlinaric (Handcash)', 'Rafa (Handcash)'], '1.1'),
+  p2pPaymentDestination: brfc('Get no monitored payment destination (p2p payment destination)', ['Miguel Duarte (Money Button)', 'Ryan X. Charles (Money Button)', 'Ivan Mlinaric (Handcash)', 'Rafa (Handcash)'], '1.1'),
+  witnessPublic: brfc('Public API of the Controllable UTXO Token Witness', ['LI Long (ChainBow)'], '1'),
+  witnessCheckBaton: brfc('Check Baton API of the Controllable UTXO Token Witness', ['LI Long (ChainBow)'], '1'),
+  witnessCheckToken: brfc('Check Token API of the Controllable UTXO Token Witness', ['LI Long (ChainBow)'], '1'),
+  witnessCheckSale: brfc('Check Sale API of the Controllable UTXO Token Witness', ['LI Long (ChainBow)'], '1'),
   //expect: 'c89beec44e80',
-  witnessCheckBuy: brfc.brfc('Check Buy API of the Controllable UTXO Token Witness', ['LI Long (ChainBow)'], '1'),
+  witnessCheckBuy: brfc('Check Buy API of the Controllable UTXO Token Witness', ['LI Long (ChainBow)'], '1'),
   //expect: '598b080631c4',
-  tokenLogo: brfc.brfc('Logo URI of the Controllable UTXO Token', ['LI Long (ChainBow)'], '1'),
-  tokenInformation: brfc.brfc('Infomation URI of the Controllable UTXO Token', ['LI Long (ChainBow)'], '1')
+  tokenLogo: brfc('Logo URI of the Controllable UTXO Token', ['LI Long (ChainBow)'], '1'),
+  tokenInformation: brfc('Infomation URI of the Controllable UTXO Token', ['LI Long (ChainBow)'], '1')
 };
 
 class DnsOverHttps {
@@ -195,15 +199,10 @@ class Http {
   }
 
   async _basicRequest(url, options = {}) {
-    const controller = new AbortController__default['default']();
-    const timer = setTimeout(() => controller.abort(), 30000);
-    return this.fetch(url, _objectSpread(_objectSpread({}, options), {}, {
-      credentials: 'omit',
-      signal: controller.signal
-    })).then(result => {
-      clearTimeout(timer);
-      return result;
-    });
+    const timeout = 5000;
+    return Promise.race([this.fetch(url, _objectSpread(_objectSpread({}, options), {}, {
+      credentials: 'omit'
+    })), new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), timeout))]);
   }
 
 }
@@ -416,7 +415,7 @@ class RequestBodyFactory {
 
 class Clock {
   now() {
-    return moment__default['default']();
+    return new Date();
   }
 
 }

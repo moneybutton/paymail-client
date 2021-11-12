@@ -1,4 +1,4 @@
-import { brfc } from '@moneybutton/brfc'
+import { brfc } from './brfc'
 
 export const CapabilityCodes = {
   pki: 'pki',

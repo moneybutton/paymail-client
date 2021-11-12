@@ -1,10 +1,16 @@
-import { brfc } from '@moneybutton/brfc';
 import Promise$1 from 'bluebird';
 import _defineProperty from '@babel/runtime/helpers/defineProperty';
-import 'abort-controller/polyfill';
-import AbortController from 'abort-controller';
-import moment from 'moment';
 import fetch from 'cross-fetch';
+
+const bsv = require('bsv');
+
+const brfc = (title, authors, version) => {
+  const autorString = authors.join(', ').trim();
+  const stringToHash = [title.trim() + autorString + (version.toString() || '')].join('').trim();
+  let hash = bsv.crypto.Hash.sha256sha256(Buffer.from(stringToHash));
+  hash = hash.reverse();
+  return hash.toString('hex').substring(0, 12);
+};
 
 const CapabilityCodes = {
   pki: 'pki',
@@ -183,15 +189,10 @@ class Http {
   }
 
   async _basicRequest(url, options = {}) {
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 30000);
-    return this.fetch(url, _objectSpread(_objectSpread({}, options), {}, {
-      credentials: 'omit',
-      signal: controller.signal
-    })).then(result => {
-      clearTimeout(timer);
-      return result;
-    });
+    const timeout = 5000;
+    return Promise.race([this.fetch(url, _objectSpread(_objectSpread({}, options), {}, {
+      credentials: 'omit'
+    })), new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), timeout))]);
   }
 
 }
@@ -404,7 +405,7 @@ class RequestBodyFactory {
 
 class Clock {
   now() {
-    return moment();
+    return new Date();
   }
 
 }

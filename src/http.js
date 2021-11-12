@@ -1,36 +1,33 @@
-import 'abort-controller/polyfill'
-import AbortController from 'abort-controller'
-
 class Http {
-  constructor (fetch) {
+  constructor ( fetch ) {
     this.fetch = fetch
   }
 
-  async get (url) {
-    return this._basicRequest(url)
+  async get ( url ) {
+    return this._basicRequest( url )
   }
 
-  async postJson (url, body) {
-    return this._basicRequest(url, {
+  async postJson ( url, body ) {
+    return this._basicRequest( url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(body)
-    })
+      body: JSON.stringify( body )
+    } )
   }
 
-  async _basicRequest (url, options = {}) {
-    const controller = new AbortController()
-    const timer = setTimeout(() => controller.abort(), 30000)
-    return this.fetch(url, {
-      ...options,
-      credentials: 'omit',
-      signal: controller.signal
-    }).then(result => {
-      clearTimeout(timer)
-      return result
-    })
+  async _basicRequest ( url, options = {} ) {
+    const timeout = 5000
+    return Promise.race( [
+      this.fetch( url, {
+        ...options,
+        credentials: 'omit',
+      } ),
+      new Promise( ( _, reject ) =>
+        setTimeout( () => reject( new Error( 'timeout' ) ), timeout )
+      )
+    ] );
   }
 }
 
