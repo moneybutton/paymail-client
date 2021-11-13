@@ -1,9 +1,10 @@
-// import { DnsOverHttps } from "./dns-over-https"
-
+import { DnsOverHttps } from './dns-over-https'
+import Promise from 'bluebird';
 class DnsClient {
-  constructor (dns, doh) {
+  constructor (dns, fetch) {
     this.dns = dns
-    this.doh = doh
+    this.dohAli = new DnsOverHttps(fetch, { baseUrl: 'https://dns.alidns.com/resolve' })
+    this.dohGoogle = new DnsOverHttps(fetch, { baseUrl: 'https://dns.google.com/resolve' })
   }
 
   async checkSrv (aDomain) {
@@ -78,15 +79,18 @@ class DnsClient {
   }
 
   async validateDnssec (aDomain) {
-    const dnsResponse = await this.doh.queryBsvaliasDomain(aDomain)
+    const dnsResponse = await Promise.any([
+      this.dohAli.queryBsvaliasDomain(aDomain),
+      this.dohGoogle.queryBsvaliasDomain(aDomain)
+    ]) 
     if (dnsResponse.Status !== 0 || !dnsResponse.Answer) {
-      throw new Error(`Insecure domain.`)
+      throw new Error('Insecure domain.')
     }
     const data = dnsResponse.Answer[0].data.split(' ')
     const port = data[2]
     const responseDomain = data[3]
     if (!dnsResponse.AD && !this.domainsAreEqual(aDomain, responseDomain)) {
-      throw new Error(`Insecure domain.`)
+      throw new Error('Insecure domain.')
     }
     return {
       port,
@@ -96,7 +100,7 @@ class DnsClient {
   }
 
   domainsAreEqual (domain1, domain2) {
-    return domain1.replace(/\.$/, '') === domain2.replace(/\.$/, '')
+    return domain1.toLowerCase().replace(/\.$/, '') === domain2.toLowerCase().replace(/\.$/, '')
   }
 }
 

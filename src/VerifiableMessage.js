@@ -15,7 +15,7 @@ class VerifiableMessage {
     dt,
     purpose
   }) {
-    if (dt.toISOString) {
+    if (dt && dt.toISOString) {
       dt = dt.toISOString()
     }
 

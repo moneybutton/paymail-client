@@ -3,25 +3,113 @@ import { RequestBodyFactory } from './RequestBodyFactory'
 import { Clock } from './Clock'
 import { PaymailNotFound } from './errors/PaymailNotFound'
 import { CapabilityCodes } from './constants'
-import fetch from 'isomorphic-fetch'
+import fetch from 'cross-fetch'
 import { BrowserDns } from './BrowserDns'
 import { Http } from './http'
 
 class PaymailClient {
-  constructor (dns = null, fetch2 = null, clock = null, bsv = null) {
-    if (fetch2 === null) {
+  constructor ( dns = null, fetch2 = null, clock = null, bsv = null ) {
+    if ( fetch2 === null ) {
       fetch2 = fetch
     }
-    if (dns === null) {
-      dns = new BrowserDns(fetch2)
+    if ( dns === null ) {
+      dns = new BrowserDns( fetch2 )
     }
-    if (bsv === null) {
-      bsv = require('bsv')
+    if ( bsv === null ) {
+      bsv = require( 'bsv' )
     }
     this.bsv = bsv
-    this.resolver = new EndpointResolver(dns, fetch2)
-    this.http = new Http(fetch2)
-    this.requestBodyFactory = new RequestBodyFactory(clock !== null ? clock : new Clock())
+    this.resolver = new EndpointResolver( dns, fetch2 )
+    this.http = new Http( fetch2 )
+    this.requestBodyFactory = new RequestBodyFactory( clock !== null ? clock : new Clock() )
+  }
+
+  /**
+   * Get witness public.
+   *
+   * @param {String} domain - a domain
+   */
+  async witnessPublic ( domain ) {
+    const apiDescriptor = await this.resolver.getApiDescriptionFor( domain )
+    const url = apiDescriptor.capabilities[ CapabilityCodes.witnessPublic ]
+    const response = await this.http.get( url )
+    return await response.json()
+  }
+
+  /**
+   * witness check baton.
+   *
+   * @param {String} domain - a domain
+   */
+  async witnessCheckBaton ( domain, args ) {
+    const apiDescriptor = await this.resolver.getApiDescriptionFor( domain )
+    const url = apiDescriptor.capabilities[ CapabilityCodes.witnessCheckBaton ]
+    const response = await this.http.get( `${url}?${new URLSearchParams( args )}` )
+    return await response.json()
+  }
+
+  /**
+   * witness check token.
+   *
+   * @param {String} domain - a domain
+   */
+  async witnessCheckToken ( domain, args ) {
+    const apiDescriptor = await this.resolver.getApiDescriptionFor( domain )
+    const url = apiDescriptor.capabilities[ CapabilityCodes.witnessCheckToken ]
+    const response = await this.http.get( `${url}?${new URLSearchParams( args )}` )
+    return await response.json()
+  }
+
+  /**
+ * witness check sale contract.
+ *
+ * @param {String} domain - a domain
+ */
+  async witnessCheckSale ( domain, args ) {
+    const apiDescriptor = await this.resolver.getApiDescriptionFor( domain )
+    const url = apiDescriptor.capabilities[ CapabilityCodes.witnessCheckSale ]
+    const response = await this.http.get( `${url}?${new URLSearchParams( args )}` )
+    return await response.json()
+  }
+
+  /**
+* witness check buy contract.
+*
+* @param {String} domain - a domain
+*/
+  async witnessCheckBuy ( domain, args ) {
+    const apiDescriptor = await this.resolver.getApiDescriptionFor( domain )
+    const url = apiDescriptor.capabilities[ CapabilityCodes.witnessCheckBuy ]
+    const response = await this.http.get( `${url}?${new URLSearchParams( args )}` )
+    return await response.json()
+  }
+
+  /**
+   * Get token's logo uri.
+   *
+   * @param {String} domain - a domain
+   * @param {String} contractId - contractId of Token
+   * return uri string
+   */
+  async tokenLogo ( domain, contractId ) {
+    const apiDescriptor = await this.resolver.getApiDescriptionFor( domain )
+    let uri = apiDescriptor.capabilities[ CapabilityCodes.tokenLogo ]
+    uri = uri.replace( '{contractId}', contractId )
+    return { uri }
+  }
+
+  /**
+ * Get token's info json.
+ *
+ * @param {String} domain - a domain
+ * @param {String} contractId - contractId of Token
+ */
+  async tokenInformation ( domain, contractId ) {
+    const apiDescriptor = await this.resolver.getApiDescriptionFor( domain )
+    let uri = apiDescriptor.capabilities[ CapabilityCodes.tokenInformation ]
+    uri = uri.replace( '{contractId}', contractId )
+    const response = await this.http.get( uri )
+    return await response.json()
   }
 
   /**
@@ -29,9 +117,9 @@ class PaymailClient {
    *
    * @param {String} paymail - a paymail address
    */
-  async getPublicKey (paymail) {
-    const identityUrl = await this.resolver.getIdentityUrlFor(paymail)
-    const response = await this.http.get(identityUrl)
+  async getPublicKey ( paymail ) {
+    const identityUrl = await this.resolver.getIdentityUrlFor( paymail )
+    const response = await this.http.get( identityUrl )
     const { pubkey } = await response.json()
     return pubkey
   }
@@ -50,14 +138,14 @@ class PaymailClient {
    * @param {String} senderInfo.signature - Optional. Valid signature according to paymail specification.
    * @param {String} privateKey - Optional. private key to sign the request.
    */
-  async getOutputFor (aPaymail, senderInfo, privateKey = null) {
-    const addressUrl = await this.resolver.getAddressUrlFor(aPaymail)
+  async getOutputFor ( aPaymail, senderInfo, privateKey = null ) {
+    const addressUrl = await this.resolver.getAddressUrlFor( aPaymail )
     const response = await this.http.postJson(
       addressUrl,
-      this.requestBodyFactory.buildBodyToRequestAddress(senderInfo, privateKey)
+      this.requestBodyFactory.buildBodyToRequestAddress( senderInfo, privateKey )
     )
-    if (!response.ok) {
-      throw new PaymailNotFound(`Paymail not found: ${aPaymail}`, aPaymail)
+    if ( !response.ok ) {
+      throw new PaymailNotFound( `Paymail not found: ${aPaymail}`, aPaymail )
     }
     const { output } = await response.json()
     return output
@@ -70,9 +158,9 @@ class PaymailClient {
    * @param {String} pubkey - Public key to check.
    * @param {String} paymail - a paymail address
    */
-  async verifyPubkeyOwner (pubkey, paymail) {
-    const url = await this.resolver.getVerifyUrlFor(paymail, pubkey)
-    const response = await this.http.get(url)
+  async verifyPubkeyOwner ( pubkey, paymail ) {
+    const url = await this.resolver.getVerifyUrlFor( paymail, pubkey )
+    const response = await this.http.get( url )
     const body = await response.json()
     const { match } = body
     return match
@@ -92,34 +180,34 @@ class PaymailClient {
    * @param {String} paymail - Signature owner paymail
    * @param {String} pubkey - Optional. Public key that validates the signature.
    */
-  async isValidSignature (message, signature, paymail = null, pubkey = null) {
-    if (paymail == null && pubkey === null) {
-      throw new Error('Must specify either paymail or pubkey')
+  async isValidSignature ( message, signature, paymail = null, pubkey = null ) {
+    if ( paymail == null && pubkey === null ) {
+      throw new Error( 'Must specify either paymail or pubkey' )
     }
     let senderPublicKey
-    if (paymail) {
-      if (pubkey && await this.resolver.domainHasCapability(paymail.split('@')[1], CapabilityCodes.verifyPublicKeyOwner)) {
-        if (await this.verifyPubkeyOwner(pubkey, paymail)) {
-          senderPublicKey = this.bsv.PublicKey.fromString(pubkey)
+    if ( paymail ) {
+      if ( pubkey && await this.resolver.domainHasCapability( paymail.split( '@' )[ 1 ], CapabilityCodes.verifyPublicKeyOwner ) ) {
+        if ( await this.verifyPubkeyOwner( pubkey, paymail ) ) {
+          senderPublicKey = this.bsv.PublicKey.fromString( pubkey )
         } else {
           return false
         }
       } else {
-        const hasPki = await this.resolver.domainHasCapability(paymail.split('@')[1], CapabilityCodes.pki)
-        if (hasPki) {
-          const identityKey = await this.getPublicKey(paymail)
-          senderPublicKey = this.bsv.PublicKey.fromString(identityKey)
+        const hasPki = await this.resolver.domainHasCapability( paymail.split( '@' )[ 1 ], CapabilityCodes.pki )
+        if ( hasPki ) {
+          const identityKey = await this.getPublicKey( paymail )
+          senderPublicKey = this.bsv.PublicKey.fromString( identityKey )
         } else {
           return false
         }
       }
     }
 
-    const senderKeyAddress = this.bsv.Address.fromPublicKey(senderPublicKey || pubkey)
+    const senderKeyAddress = this.bsv.Address.fromPublicKey( senderPublicKey || pubkey )
     try {
-      const verified = message.verify(senderKeyAddress.toString(), signature)
+      const verified = message.verify( senderKeyAddress.toString(), signature )
       return verified
-    } catch (err) {
+    } catch ( err ) {
       return false
     }
   }
@@ -130,50 +218,50 @@ class PaymailClient {
    * @param {String} paymail - a paymail address
    * @param {String} s - the preferred size of the image
    */
-  async getPublicProfile (paymail) {
-    let publicProfileUrl = await this.resolver.getPublicProfileUrlFor(paymail)
-    const response = await this.http.get(publicProfileUrl)
-    if (!response.ok) {
+  async getPublicProfile ( paymail ) {
+    const publicProfileUrl = await this.resolver.getPublicProfileUrlFor( paymail )
+    const response = await this.http.get( publicProfileUrl )
+    if ( !response.ok ) {
       const body = await response.json()
-      throw new Error(`Server failed with: ${JSON.stringify(body)}`)
+      throw new Error( `Server failed with: ${JSON.stringify( body )}` )
     }
     const { avatar, name } = await response.json()
     return { avatar, name }
   }
 
-  async sendRawTx (targetPaymail, hexTransaction, reference, metadata = {}) {
-    if (!hexTransaction) {
-      throw new Error('transaction hex cannot be empty')
+  async sendRawTx ( targetPaymail, hexTransaction, reference, metadata = {} ) {
+    if ( !hexTransaction ) {
+      throw new Error( 'transaction hex cannot be empty' )
     }
-    let receiveTxUrl = await this.resolver.getSendTxUrlFor(targetPaymail)
+    const receiveTxUrl = await this.resolver.getSendTxUrlFor( targetPaymail )
     const response = await this.http.postJson(
       receiveTxUrl,
-      this.requestBodyFactory.buildBodySendTx(hexTransaction, reference, metadata)
+      this.requestBodyFactory.buildBodySendTx( hexTransaction, reference, metadata )
     )
-    if (!response.ok) {
+    if ( !response.ok ) {
       const body = await response.json()
-      throw new Error(`Server failed with: ${JSON.stringify(body)}`)
+      throw new Error( `Server failed with: ${JSON.stringify( body )}` )
     }
     return response.json()
   }
 
-  async getP2pPaymentDestination (targetPaymail, satoshis) {
-    if (!satoshis) {
-      throw new Error('Amount in satohis needs to be specified')
+  async getP2pPaymentDestination ( targetPaymail, satoshis ) {
+    if ( !satoshis ) {
+      throw new Error( 'Amount in satohis needs to be specified' )
     }
-    let paymentDestinationUrl = await this.resolver.getP2pPatmentDestinationUrlFor(targetPaymail)
+    const paymentDestinationUrl = await this.resolver.getP2pPatmentDestinationUrlFor( targetPaymail )
     const response = await this.http.postJson(
       paymentDestinationUrl,
-      this.requestBodyFactory.buildBodyP2pPaymentDestination(satoshis)
+      this.requestBodyFactory.buildBodyP2pPaymentDestination( satoshis )
     )
-    if (!response.ok) {
+    if ( !response.ok ) {
       const body = await response.json()
-      throw new Error(`Server failed with: ${JSON.stringify(body)}`)
+      throw new Error( `Server failed with: ${JSON.stringify( body )}` )
     }
 
     const body = await response.json()
-    if (!body.outputs) {
-      throw new Error('Server answered with a wrong format. Missing outputs')
+    if ( !body.outputs ) {
+      throw new Error( 'Server answered with a wrong format. Missing outputs' )
     }
 
     return body

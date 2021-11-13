@@ -1,16 +1,22 @@
 import { DnsOverHttps } from './dns-over-https'
+import Promise from 'bluebird';
 
 class BrowserDns {
   constructor (fetch) {
-    this.doh = new DnsOverHttps(fetch, { baseUrl: 'https://dns.google.com/resolve' })
+    this.dohAli = new DnsOverHttps(fetch, { baseUrl: 'https://dns.alidns.com/resolve' })
+    this.dohGoogle = new DnsOverHttps(fetch, { baseUrl: 'https://dns.google.com/resolve' })
   }
 
   async resolveSrv (aDomain, aCallback) {
     try {
-      const response = await this.doh.resolveSrv(aDomain)
+      const response = await Promise.any([
+        this.dohAli.resolveSrv(aDomain),
+        this.dohGoogle.resolveSrv(aDomain)
+      ])
+
       if (response.Status === 0 && response.Answer) {
         const data = response.Answer.map(record => {
-          const [ priority, weight, port, name ] = record.data.split(' ')
+          const [priority, weight, port, name] = record.data.split(' ')
           return {
             priority,
             weight,
@@ -20,7 +26,8 @@ class BrowserDns {
           }
         })
         aCallback(null, data)
-      } else if (response.Status === 0 && !response.Answer) {
+      } else if (!response.Answer) {
+        // ignore check response.Status === 0
         aCallback({ code: 'ENODATA' })
       } else {
         aCallback(new Error('error during dns query'))

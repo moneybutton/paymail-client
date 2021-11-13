@@ -11,6 +11,12 @@ import {
 import { MockDNS } from './util/MockDNS'
 import { DnsClient } from '../src/dns-client'
 import { DnsOverHttps } from '../src/dns-over-https'
+import * as md from 'mocha-define'
+
+const get=[]
+function def(name,fn) {
+  get[name] = fn()
+}
 
 describe('EndpointResolver', () => {
   def('dns', () => new MockDNS())
@@ -18,7 +24,7 @@ describe('EndpointResolver', () => {
   def('doh', () => new DnsOverHttps(fetch, {
     baseUrl: get.dohUrl
   }))
-  def('dnsClient', () => new DnsClient(get.dns, get.doh))
+  def('dnsClient', () => new DnsClient(get.dns, fetch))
   def('resolver', () => EndpointResolver.create(get.dnsClient, fetch))
   def('aDomain', () => 'somedomain.tld')
 
@@ -214,7 +220,7 @@ describe('EndpointResolver', () => {
     })
 
     describe('when the srv record is present, it doesn\'t use dnssec but the domain is a moneybutton.com', () => {
-      def('apiDomain', () => `moneybutton.com`)
+      def('apiDomain', () => 'moneybutton.com')
       beforeEach(() => {
         get.dns.registerRecord(`_bsvalias._tcp.${get.aDomain}`, {
           name: get.apiDomain,
@@ -232,7 +238,7 @@ describe('EndpointResolver', () => {
     })
 
     describe('when the srv record is present, it doesn\'t use dnssec but the domain is a www.moneybutton.com', () => {
-      def('apiDomain', () => `www.moneybutton.com`)
+      def('apiDomain', () => 'www.moneybutton.com')
       beforeEach(() => {
         get.dns.registerRecord(`_bsvalias._tcp.${get.aDomain}`, {
           name: get.apiDomain,
@@ -297,7 +303,7 @@ describe('EndpointResolver', () => {
 
     describe('when the srv record present it doesn\'t use dnssec but its handcash', () => {
       def('aDomain', () => 'handcash.io')
-      def('apiDomain', () => `handcash-paymail-production.herokuapp.com`)
+      def('apiDomain', () => 'handcash-paymail-production.herokuapp.com')
       beforeEach(() => {
         get.dns.registerRecord(`_bsvalias._tcp.${get.aDomain}`, {
           name: get.apiDomain,
@@ -316,7 +322,7 @@ describe('EndpointResolver', () => {
 
     describe('when the srv record present it doesn\'t use dnssec but its handcash using its own domain', () => {
       def('aDomain', () => 'handcash.io')
-      def('apiDomain', () => `handcash.io`)
+      def('apiDomain', () => 'handcash.io')
       beforeEach(() => {
         get.dns.registerRecord(`_bsvalias._tcp.${get.aDomain}`, {
           name: get.apiDomain,
@@ -335,7 +341,7 @@ describe('EndpointResolver', () => {
 
     describe('when the srv record present it doesn\'t use dnssec and its handcash but the url is not actual handcash api url', () => {
       def('aDomain', () => 'handcash.io')
-      def('apiDomain', () => `fake-url.not-handcash.io`)
+      def('apiDomain', () => 'fake-url.not-handcash.io')
       beforeEach(() => {
         get.dns.registerRecord(`_bsvalias._tcp.${get.aDomain}`, {
           name: get.apiDomain,

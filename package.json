@@ -1,6 +1,6 @@
 {
   "name": "@moneybutton/paymail-client",
-  "version": "0.38.4",
+  "version": "0.38.3",
   "description": "Money Button isomorphic Paymail utilities.",
   "main": "dist/paymail-client.cjs.js",
   "module": "dist/paymail-client.esm.js",
@@ -10,52 +10,51 @@
     "dist/**"
   ],
   "scripts": {
-    "lint": "standard --parser=babel-eslint",
-    "pretest": "yarn lint",
+    "lint": "standard --parser=babel-eslint --fix",
     "test": "mocha",
-    "build": "rollup -c",
-    "build:dev": "rollup -c",
-    "build:prod": "NODE_ENV=production yarn build",
-    "build:watch": "yarn build -w",
-    "dev": "yarn build:watch"
+    "build": "npx rollup -c",
+    "build:dev": "npx rollup -c",
+    "build:prod": "NODE_ENV=production npm run build",
+    "build:watch": "npm run build -w",
+    "prepublish": "npm run build:prod",
+    "dev": "npm run build:watch"
   },
-  "repository": "https://github.com/moneybutton/paymail-client",
   "author": "Yours Inc.",
   "license": "Open-BSV",
   "publishConfig": {
     "access": "public"
   },
   "dependencies": {
-    "@babel/runtime": "7.5.5",
-    "@moneybutton/brfc": "^0.38.4",
-    "abort-controller": "3.0.0",
-    "isomorphic-fetch": "2.2.1",
-    "moment": "2.24.0"
-  },
-  "peerDependencies": {
-    "bsv": ">1.0.0"
+    "@babel/runtime": "7.15.4",
+    "bluebird": "^3.7.2",
+    "bsv": "^1.5.5",
+    "cross-fetch": "^3.1.4"
   },
   "devDependencies": {
-    "@babel/cli": "7.5.5",
-    "@babel/core": "7.5.5",
-    "@babel/plugin-proposal-object-rest-spread": "7.5.5",
-    "@babel/plugin-transform-runtime": "7.5.5",
-    "@babel/preset-env": "7.5.5",
-    "@rollup/plugin-commonjs": "11.0.1",
-    "@rollup/plugin-node-resolve": "7.0.0",
-    "@rollup/plugin-replace": "2.3.0",
-    "babel-eslint": "9.0.0",
-    "bdd-lazy-var": "2.5.1",
-    "chai": "4.2.0",
-    "dotenv-cli": "2.0.1",
-    "http-server": "0.11.1",
-    "mocha": "6.2.3",
-    "rollup": "1.29.0",
-    "rollup-plugin-babel": "4.3.3",
+    "@babel/cli": "7.15.7",
+    "@babel/core": "7.15.5",
+    "@babel/plugin-proposal-object-rest-spread": "7.15.6",
+    "@babel/plugin-transform-runtime": "7.15.0",
+    "@babel/polyfill": "^7.10.4",
+    "@babel/preset-env": "7.15.6",
+    "@babel/register": "^7.10.5",
+    "@rollup/plugin-commonjs": "20.0.0",
+    "@rollup/plugin-node-resolve": "13.0.4",
+    "@rollup/plugin-replace": "3.0.0",
+    "babel-eslint": "10.1.0",
+    "bdd-lazy-var": "2.6.1",
+    "chai": "4.3.4",
+    "dotenv-cli": "4.0.0",
+    "http-server": "13.0.2",
+    "mocha": "9.1.1",
+    "mocha-define": "^0.2.0",
+    "rollup": "2.56.3",
+    "rollup-plugin-babel": "4.4.0",
     "rollup-plugin-node-builtins": "2.1.2",
     "rollup-plugin-node-globals": "1.4.0",
-    "should": "13.2.1",
-    "standard": "12.0.1"
+    "should": "13.2.3",
+    "standard": "16.0.3",
+    "ts-node": "^10.1.0"
   },
   "standard": {
     "globals": [
@@ -67,6 +66,5 @@
     "ignore": [
       "docs/"
     ]
-  },
-  "gitHead": "3ac0d2f8bdcd9bbb7b9934b30e92380c6600c95a"
+  }
 }
