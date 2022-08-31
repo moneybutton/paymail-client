@@ -8,6 +8,7 @@ import { CapabilityCodes } from './constants'
 import { AssetNotAccepted } from './errors/AssetNotAccepted'
 import { ProtocolNotSupported } from './errors/ProtocolNotSupported'
 import { PaymailServerError } from './errors/PaymailServerError'
+import { EndpointResolver } from './EndpointResolver'
 
 export {
   PaymailClient,
@@ -19,5 +20,6 @@ export {
   CapabilityCodes,
   AssetNotAccepted,
   ProtocolNotSupported,
-  PaymailServerError
+  PaymailServerError,
+  EndpointResolver
 }
