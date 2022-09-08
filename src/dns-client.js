@@ -56,9 +56,15 @@ class DnsClient {
       return this.domainsAreEqual('handcash-cloud-staging.herokuapp.com', srvResponseDomain)
     } else if (this.domainsAreEqual('localhost', srvResponseDomain)) {
       return true
+    } else if (this.isMoneyButtonDomain(srvResponseDomain)) {
+      return true
     } else {
       return false
     }
+  }
+
+  isMoneyButtonDomain (aDomain) {
+    return this.domainsAreEqual(aDomain, 'moneybutton.com') || this.domainsAreEqual(aDomain, 'www.moneybutton.com')
   }
 
   responseIsWwwSubdomain (srvResponseDomain, originalDomain) {
