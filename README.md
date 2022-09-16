@@ -4,6 +4,8 @@
 
 Javascript client to interact with BSV paymail protocol.
 
+See the [docs](docs/paymail-overview.md)
+
 ## Ussage.
 
 ``` javascript
